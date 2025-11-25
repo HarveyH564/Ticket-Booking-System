@@ -3,6 +3,7 @@ class User():
         self.userID = None
         self.userPassword = None
         self.purchasedTickets = None
+        self.cart = None
 
     def setUserID(self, userID):
         self.userID = userID
@@ -21,3 +22,9 @@ class User():
 
     def getPurchasedTickets(self):
         return self.purchasedTickets
+
+    def setCart(self, cart):
+        self.cart = cart
+
+    def getCart(self):
+        return self.cart
