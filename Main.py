@@ -1,6 +1,22 @@
 import os
 import json
 
+from Events import Event
+from Admin import Admin
+
+# testing with a events list can be change later
+event1= Event()
+event1.setVenue("Club21")
+event1.setStartDate("12-12-2012")
+event1.setEndDate("13-12-2012")
+event1.setDescription("Studen night")
+event1.setTickets(20)
+
+events = [event1]
+
+
+
+
 def getEvents():
     # TO DO
     return
@@ -167,5 +183,8 @@ def Main():
         # will become true if user logs in or creates account
         loggedIn = initialMenu()
 
+    admin = Admin()
+    admin.viewAllEvents(events)
 
-start = Main()
+if __name__ == "__main__":
+    Main()
