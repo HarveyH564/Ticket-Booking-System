@@ -1,88 +1,75 @@
 import os
 import json
-
 from Events import Event
 from Admin import Admin
 
-# testing with a events list can be change later
-event1= Event()
-event1.setVenue("Club21")
-event1.setStartDate("12-12-2012")
-event1.setEndDate("13-12-2012")
-event1.setDescription("Studen night")
-event1.setTickets(20)
 
-events = [event1]
-
-
-
-
-def getEvents():
+def get_events():
     # TO DO
     return
-def findPopularEvents():
+def find_popular_events():
     # TO DO
     return
-def filterEventsByLocation():
+def filter_events_by_location():
     # TO DO
     return
-def filterEventsByDate():
+def filter_events_by_date():
     # TO DO
     return
-def filterEventsByTicketsLeft():
+def filter_events_by_tickets_left():
     # TO DO
     return
-def filterEventsByGenre():
+def filter_events_by_genre():
     # TO DO
     return
-def createUser():
+def create_user():
     # TO DO
     return
-def deleteUser():
+def delete_user():
     # TO DO
     return
-def updateUser():
+def update_user():
     # TO DO
     return
-def createEventMap():
+def create_event_map():
     # TO DO
     return
-def createTicketMap():
+def create_ticket_map():
     # TO DO
     return
-def createTicket():
+def create_ticket():
     # TO DO
     return
-def deleteTicket():
+def delete_ticket():
     # TO DO
     return
-def sendReminder():
+def send_reminder():
     # TO DO
     return
-def createQuestion():
+def create_question():
     # TO DO
     return
-def deleteQuestion():
+def delete_question():
     # TO DO
     return
-def respondToQuestion():
+def respond_to_question():
     # TO DO
     return
-def getEventsAdmin():
+def get_events_admin():
     # TO DO
     return
-def updateEvent():
+def update_event():
     # TO DO
     return
-def deleteEvent():
+def delete_event():
     # TO DO
     return
 
-def handleInput(userInput):
+def handle_input(userInput):
     if userInput == "<-":
         return
 
-def createAccount():
+def create_account():
     invalidUsername = True
     while invalidUsername:
         username= input("Enter username: ")
@@ -126,7 +113,7 @@ def login():
             return False
 
         # check user name
-        if not os.path.exists("users/" + username + ".json"):
+        if not os.path.exists("users/" + username + ".json") or not os.isdir():
             print("User doesn't exist, please try again")
         else:
             incorrectUsername = False
@@ -154,7 +141,10 @@ def login():
 
 # start menu for initialising program
 # returns true if login/create account was successful
-def initialMenu():
+def initial_menu():
+    if not os.path.isdir("users"):
+        os.mkdir("users")
+
     # Welcome msg
     print("Welcome to the project")
     print("Enter [<-] to go back to the previous menu")
@@ -162,11 +152,11 @@ def initialMenu():
     # Loops the menu unless user logs in or creates account
     while True:
         userInput = input("Select an option: Create an account [C], Login to an account [L]: ")
-        if userInput == "C":
-            attempt = createAccount()
+        if userInput == "C" or "c":
+            attempt = create_account()
             if attempt == True:
                 return True
-        elif userInput == "L":
+        elif userInput == "L" or "l":
             attempt = login()
             if attempt == True:
                 return True
@@ -178,14 +168,23 @@ def initialMenu():
 def Main():
     # TO DO
 
+    # testing with a events list can be change later
+    #event1 = Event()
+    #event1.setVenue("Club21")
+    #event1.setStartDate("12-12-2012")
+    #event1.setEndDate("13-12-2012")
+    #event1.setDescription("Student night")
+    #event1.setTickets(20)
+
+    #events = [event1]
+
     loggedIn = False
     while not loggedIn:
         # will become true if user logs in or creates account
-        loggedIn = initialMenu()
+        loggedIn = initial_menu()
 
-    admin = Admin()
-    admin.viewAllEvents(events)
+    #admin = Admin()
+    #admin.viewAllEvents(events)
 
-if __name__ == "__main__":
-    Main()
-    
+
+Main()

@@ -3,19 +3,19 @@ class Venue():
         self.seats = seats
         self.location = ""
 
-    def setLocation(self, location):
+    def set_location(self, location):
         self.location = location
 
-    def getLocation(self):
+    def get_location(self):
         return self.location
 
-    def setSeats(self, seats):
+    def set_seats(self, seats):
         self.seats = seats
 
-    def getSeats(self):
+    def get_seats(self):
         return self.seats
 
-    def printSeats(self):
+    def print_seats(self):
         for row in self.seats:
             rowList = ""
             for seat in row:

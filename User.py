@@ -5,26 +5,26 @@ class User():
         self.purchasedTickets = None
         self.cart = None
 
-    def setusername(self, username):
+    def set_username(self, username):
         self.username = username
 
-    def getusername(self):
+    def get_username(self):
         return self.username
 
-    def setpassword(self, password):
+    def set_password(self, password):
         self.password = password
 
-    def getpassword(self):
+    def get_password(self):
         return self.password
 
-    def setPurchasedTickets(self, purchasedTickets):
+    def set_purchased_tickets(self, purchasedTickets):
         self.purchasedTickets = purchasedTickets
 
-    def getPurchasedTickets(self):
+    def get_purchased_tickets(self):
         return self.purchasedTickets
 
-    def setCart(self, cart):
+    def set_cart(self, cart):
         self.cart = cart
 
-    def getCart(self):
+    def get_cart(self):
         return self.cart

@@ -1,3 +1,5 @@
+import os
+
 class Event():
     def __init__(self):
         # TO DO
@@ -7,36 +9,39 @@ class Event():
         self.endDate = None
         self.description = None
 
-    def setVenue(self, venue):
+    def set_venue(self, venue):
         self.venue = venue
 
-    def getVenue(self):
+    def get_venue(self):
         return self.venue
 
-    def setTickets(self, tickets):
+    def set_tickets(self, tickets):
         self.tickets = tickets
 
-    def getTickets(self):
+    def get_tickets(self):
         return self.tickets
 
-    def setStartDate(self, startDate):
+    def set_start_date(self, startDate):
         self.startDate = startDate
 
-    def getStartDate(self):
+    def get_start_date(self):
         return self.startDate
 
-    def setEndDate(self, endDate):
+    def set_end_date(self, endDate):
         self.endDate = endDate
 
-    def getEndDate(self):
+    def get_end_date(self):
         return self.endDate
 
-    def setDescription(self, description):
+    def set_description(self, description):
         self.description = description
 
-    def getDescription(self):
+    def get_description(self):
         return self.description
     
     def __str__(self):
         return f"Venue: {self.venue}, Start: {self.startDate}, End: {self.endDate}, Desc: {self.description}"
 
+    def save_event(self):
+        if not os.path.isdir("events"):
+            os.mkdir("events")

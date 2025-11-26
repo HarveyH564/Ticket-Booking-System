@@ -3,19 +3,19 @@ class Admin():
         self.adminID = None
         self.adminPassword = None
 
-    def setAdminID(self, adminID):
+    def set_admin_id(self, adminID):
         self.adminID = adminID
 
-    def getAdminID(self):
+    def get_admin_id(self):
         return self.adminID
 
-    def setAdminPassword(self, adminPassword):
+    def set_admin_password(self, adminPassword):
         self.adminPassword = adminPassword
 
-    def getAdminPassword(self):
+    def get_admin_password(self):
         return self.adminPassword
     #hello
-    def viewAllEvents(self, eventslist):
+    def view_all_events(self, eventslist):
         print("\n=== ALL events ===")
 
         if len(eventslist) ==0:

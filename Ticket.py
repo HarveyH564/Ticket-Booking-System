@@ -7,32 +7,32 @@ class Ticket():
         self.price = None
         self.type = None
 
-    def setID(self, id):
+    def set_id(self, id):
         self.id = id
 
-    def getID(self):
+    def get_id(self):
         return self.id
 
-    def setPurchased(self, purchased):
+    def set_purchased(self, purchased):
         self.purchased = purchased
 
-    def getPurchased(self):
+    def get_purchased(self):
         return self.purchased
 
-    def setUserID(self, userID):
+    def set_user_id(self, userID):
         self.userID = userID
 
-    def getUserID(self):
+    def get_user_id(self):
         return self.userID
 
-    def setPrice(self, price):
+    def set_price(self, price):
         self.price = price
 
-    def getPrice(self):
+    def get_price(self):
         return self.price
 
-    def setType(self, type):
+    def set_type(self, type):
         self.type = type
 
-    def getType(self):
+    def get_type(self):
         return self.type
