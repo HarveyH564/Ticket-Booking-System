@@ -1,7 +1,30 @@
 class User():
     def __init__(self):
-        # TO DO
-        return
-    def getPreviousPurchase():
-        # TO DO
-        return
+        self.userID = None
+        self.userPassword = None
+        self.purchasedTickets = None
+        self.cart = None
+
+    def setUserID(self, userID):
+        self.userID = userID
+
+    def getUserID(self):
+        return self.userID
+
+    def setUserPassword(self, userPassword):
+        self.userPassword = userPassword
+
+    def getUserPassword(self):
+        return self.userPassword
+
+    def setPurchasedTickets(self, purchasedTickets):
+        self.purchasedTickets = purchasedTickets
+
+    def getPurchasedTickets(self):
+        return self.purchasedTickets
+
+    def setCart(self, cart):
+        self.cart = cart
+
+    def getCart(self):
+        return self.cart
