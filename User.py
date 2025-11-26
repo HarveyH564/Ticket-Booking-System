@@ -2,7 +2,7 @@ class User():
     def __init__(self):
         self.username = None
         self.password = None
-        self.purchasedTickets = None
+        self.purchased_tickets = None
         self.cart = None
 
     def set_username(self, username):
@@ -17,11 +17,11 @@ class User():
     def get_password(self):
         return self.password
 
-    def set_purchased_tickets(self, purchasedTickets):
-        self.purchasedTickets = purchasedTickets
+    def set_purchased_tickets(self, purchased_tickets):
+        self.purchased_tickets = purchased_tickets
 
     def get_purchased_tickets(self):
-        return self.purchasedTickets
+        return self.purchased_tickets
 
     def set_cart(self, cart):
         self.cart = cart

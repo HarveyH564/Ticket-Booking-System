@@ -3,7 +3,7 @@ class Ticket():
         # TO DO
         self.id = None
         self.purchased = False
-        self.userID = None
+        self.user_id = None
         self.price = None
         self.type = None
 
@@ -19,11 +19,11 @@ class Ticket():
     def get_purchased(self):
         return self.purchased
 
-    def set_user_id(self, userID):
-        self.userID = userID
+    def set_user_id(self, user_id):
+        self.user_id = user_id
 
     def get_user_id(self):
-        return self.userID
+        return self.user_id
 
     def set_price(self, price):
         self.price = price

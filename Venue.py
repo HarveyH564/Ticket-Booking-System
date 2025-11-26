@@ -17,7 +17,7 @@ class Venue():
 
     def print_seats(self):
         for row in self.seats:
-            rowList = ""
+            row_list = ""
             for seat in row:
-                rowList += str(seat)
-            print(rowList)
+                row_list += str(seat)
+            print(row_list)

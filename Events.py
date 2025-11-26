@@ -5,8 +5,8 @@ class Event():
         # TO DO
         self.venue = None
         self.tickets = None
-        self.startDate = None
-        self.endDate = None
+        self.start_date = None
+        self.end_date = None
         self.description = None
 
     def set_venue(self, venue):
@@ -21,17 +21,17 @@ class Event():
     def get_tickets(self):
         return self.tickets
 
-    def set_start_date(self, startDate):
-        self.startDate = startDate
+    def set_start_date(self, start_date):
+        self.start_date = start_date
 
     def get_start_date(self):
-        return self.startDate
+        return self.start_date
 
-    def set_end_date(self, endDate):
-        self.endDate = endDate
+    def set_end_date(self, end_date):
+        self.end_date = end_date
 
     def get_end_date(self):
-        return self.endDate
+        return self.end_date
 
     def set_description(self, description):
         self.description = description
@@ -40,7 +40,7 @@ class Event():
         return self.description
     
     def __str__(self):
-        return f"Venue: {self.venue}, Start: {self.startDate}, End: {self.endDate}, Desc: {self.description}"
+        return f"Venue: {self.venue}, Start: {self.start_date}, End: {self.end_date}, Desc: {self.description}"
 
     def save_event(self):
         if not os.path.isdir("events"):
