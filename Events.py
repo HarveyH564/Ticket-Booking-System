@@ -36,3 +36,7 @@ class Event():
 
     def getDescription(self):
         return self.description
+    
+    def __str__(self):
+        return f"Venue: {self.venue}, Start: {self.startDate}, End: {self.endDate}, Desc: {self.description}"
+

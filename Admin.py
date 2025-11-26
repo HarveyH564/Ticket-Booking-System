@@ -15,3 +15,12 @@ class Admin():
     def getAdminPassword(self):
         return self.adminPassword
     #hello
+    def viewAllEvents(self, eventslist):
+        print("\n=== ALL events ===")
+
+        if len(eventslist) ==0:
+            print("no events availabel check later for updates.")
+            return
+        
+        for e in eventslist:
+            print(e)
