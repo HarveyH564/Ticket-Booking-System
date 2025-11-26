@@ -21,7 +21,3 @@ class Venue():
             for seat in row:
                 rowList += str(seat)
             print(rowList)
-
-
-#x = Venue([[["standard"], ["standard"], ["standard"]], [["standard"],["standard"], ["vip"], ["standard"]]])
-#x.printSeats()
