@@ -1,21 +1,21 @@
 class User():
     def __init__(self):
-        self.userID = None
-        self.userPassword = None
+        self.username = None
+        self.password = None
         self.purchasedTickets = None
         self.cart = None
 
-    def setUserID(self, userID):
-        self.userID = userID
+    def setusername(self, username):
+        self.username = username
 
-    def getUserID(self):
-        return self.userID
+    def getusername(self):
+        return self.username
 
-    def setUserPassword(self, userPassword):
-        self.userPassword = userPassword
+    def setpassword(self, password):
+        self.password = password
 
-    def getUserPassword(self):
-        return self.userPassword
+    def getpassword(self):
+        return self.password
 
     def setPurchasedTickets(self, purchasedTickets):
         self.purchasedTickets = purchasedTickets
