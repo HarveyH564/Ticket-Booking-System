@@ -21,9 +21,17 @@ def getEvents():
     # TO DO
     return
 def findPopularEvents():
-    # TO DO
-    return
-def filterEventsByLocation():
+    print("\n=== Popular Upcoming Events===")
+
+    if len(events) ==0:
+        print("no event avaiable")
+        return
+
+    popular_events = sorted(events, key=lambda event: event.getTickets())
+    
+    for event in popular_events[:5]:
+        print(event)
+
     # TO DO
     return
 def filterEventsByDate():
