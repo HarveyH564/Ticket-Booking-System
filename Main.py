@@ -32,10 +32,21 @@ def get_available_events():
         return event_list
 
 
-def find_popular_events():
+def getEvents():
     # TO DO
     return
-def filter_events_by_location():
+def findPopularEvents():
+    print("\n=== Popular Upcoming Events===")
+
+    if len(events) ==0:
+        print("no event avaiable")
+        return
+
+    popular_events = sorted(events, key=lambda event: event.getTickets())
+    
+    for event in popular_events[:5]:
+        print(event)
+
     # TO DO
     return
 def filter_events_by_date():
@@ -101,7 +112,7 @@ def create_account():
         # previous menu
         if username == "<-":
             print()
-            return False
+            return [False, False]
 
         if os.path.exists("users/" + username + ".json"):
             print("Username is taken, please try again")
@@ -113,7 +124,7 @@ def create_account():
                 user_file.close()
                 os.remove("users/" + username + ".json")
                 print()
-                return False
+                return [False, False]
             user_info = {
                 "username": username,
                 "password": password,
@@ -125,7 +136,7 @@ def create_account():
             user_file.close()
             invalid_username = False
             print("Account creation successful")
-            return True
+            return [True, username]
 
 # returns True if login was successful
 def login():
@@ -135,7 +146,7 @@ def login():
         # previous menu
         if username == "<-":
             print()
-            return False
+            return [False, False]
 
         # check user name
         if not os.path.exists("users/" + username + ".json"):
@@ -155,12 +166,12 @@ def login():
                     user_file.close()
                     print()
                     incorrect_password = True
-                    return False
+                    return [False, False]
                 elif password_attempt == user_password:
                     user_file.close()
                     incorrect_password = True
                     print("Login successful")
-                    return True
+                    return [True, username]
                 else:
                     print("Incorrect password, please try again")
 
@@ -179,12 +190,12 @@ def initial_menu():
         user_input = input("Select an option: Create an account [C], Login to an account [L]: ")
         if user_input == "C":
             attempt = create_account()
-            if attempt == True:
-                return True
+            if attempt[0] == True:
+                return [True, attempt[1]]
         elif user_input == "L":
             attempt = login()
-            if attempt == True:
-                return True
+            if attempt[0] == True:
+                return [True, attempt[1]]
         # previous menu
         elif user_input == "<-":
             print("Cannot go back from initial menu\n")
@@ -198,19 +209,170 @@ def logged_in_menu():
     return
 
 
-def main():
-    # TO DO
+def showAvailableEvents():
+    # Available events
+    print("\n=== Available Events ===")
+    print("1. Rock concert")
+    print("2. Pop concert")
+    print("3. International band performance")
+    print("4. Local band performance")
+    print("=========================\n")
 
-    logged_in = False
-    while not logged_in:
+
+def showEventTickets(event_choice):
+    # Display ticket options for selected event
+    events = {
+        "1": {
+            "name": "Rock concert",
+            "general": 25,
+            "vip": 60
+        },
+        "2": {
+            "name": "Pop concert",
+            "general": 35,
+            "vip": 75
+        },
+        "3": {
+            "name": "International band performance",
+            "general": 30,
+            "vip": 80
+        },
+        "4": {
+            "name": "Local band performance",
+            "general": 20,
+            "vip": 45
+        }
+    }
+
+    if event_choice in events:
+        event = events[event_choice]
+        print(f"\n=== {event['name']} Ticket Options ===")
+        print(f"General Admission: ${event['general']}")
+        print(f"VIP Ticket: ${event['vip']}")
+        print("===============================")
+        return event
+    else:
+        print("Invalid event choice!")
+        return None
+
+
+def purchaseTicket(username, event_choice, ticket_type, quantity):
+    events = {
+        "1": {
+            "name": "Rock concert",
+            "general": 25,
+            "vip": 60
+        },
+        "2": {
+            "name": "Pop concert",
+            "general": 35,
+            "vip": 75
+        },
+        "3": {
+            "name": "International band performance",
+            "general": 30,
+            "vip": 80
+        },
+        "4": {
+            "name": "Local band performance",
+            "general": 20,
+            "vip": 45
+        }
+    }
+
+    if event_choice in events:
+        event = events[event_choice]
+
+        if ticket_type == "1":  # General ticket
+            ticket_name = f"{event['name']} - General Admission"
+            price = event['general']
+        elif ticket_type == "2":  # VIP ticket
+            ticket_name = f"{event['name']} - VIP"
+            price = event['vip']
+        else:
+            print("Invalid ticket type!")
+            return False
+
+        total_cost = price * quantity
+
+        print(f"\nPurchase Summary:")
+        print(f"Event: {event['name']}")
+        print(f"Ticket Type: {ticket_name}")
+        print(f"Quantity: {quantity}")
+        print(f"Total: ${total_cost}")
+
+        confirm = input("Confirm purchase? (Y/N): ").upper()
+
+        if confirm == "Y":
+            with open(f"users/{username}.json", "r") as file:
+                userData = json.load(file)
+
+            # Add ticket to user's tickets
+            if ticket_name in userData["tickets"]:
+                userData["tickets"][ticket_name] += quantity
+            else:
+                userData["tickets"][ticket_name] = quantity
+
+            # Save updated user data
+            with open(f"users/{username}.json", "w") as file:
+                json.dump(userData, file)
+
+            print("Purchase was successful, Thank you.")
+            return True
+        else:
+            print("Purchase cancelled.")
+            return False
+    else:
+        print("Invalid event choice!")
+        return False
+
+
+def userMenu(username):
+    # Menu for logged-in users
+    while True:
+        print(f"\n=== Welcome to the Ticket System, {username}! ===")
+        print("1. View Available Events")
+
+        choice = input("Select an option (1): ")
+
+        if choice == "1":
+            showAvailableEvents()
+            event_choice = input("Enter event number (1-4) or [<-] to go back: ")
+
+            if event_choice == "<-":
+                continue
+
+            event = showEventTickets(event_choice)
+            if event:
+                print("Select ticket type:")
+                print("1. General Admission")
+                print("2. VIP")
+                ticket_type = input("Enter ticket type (1-2): ")
+
+                try:
+                    quantity = int(input("Enter quantity: "))
+                    if quantity > 0:
+                        purchaseTicket(username, event_choice, ticket_type, quantity)
+                    else:
+                        print("Quantity must be at least 1!")
+                except ValueError:
+                    print("Please enter a valid number!")
+        elif choice == "<-":
+            print("Use option 1 to view events")
+        else:
+            print("Invalid option! Please select 1 to view events.")
+
+
+def Main():
+    print("=== Simple Ticket System ===")
+
+    logged_in = [False, False]
+    while logged_in[0] == False:
         # will become true if user logs in or creates account
         logged_in = initial_menu()
-
-    logged_in_menu()
-
-    #admin = Admin()
-    #admin.viewAllEvents(events)
-
+    
+    if logged_in[0]:
+        userMenu(logged_in[1])
 
 if __name__ == "__main__":
-    main()
+    Main()
