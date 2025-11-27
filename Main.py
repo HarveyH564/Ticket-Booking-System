@@ -179,7 +179,7 @@ def initial_menu():
                 return [True, attempt[1]]
         elif user_input == "L":
             attempt = login()
-            if attempt[1] == True:
+            if attempt[0] == True:
                 return [True, attempt[1]]
         # previous menu
         elif user_input == "<-":
@@ -344,7 +344,7 @@ def Main():
     print("=== Simple Ticket System ===")
 
     logged_in = [False, False]
-    while not logged_in[0]:
+    while logged_in[0] == False:
         # will become true if user logs in or creates account
         logged_in = initial_menu()
     
