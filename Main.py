@@ -1,3 +1,4 @@
+import datetime
 import os
 import json
 from Events import Event
@@ -5,7 +6,7 @@ from Venue import Venue
 from Admin import Admin
 
 
-def get_events():
+def get_all_events():
     # TO DO
     if not os.path.isdir("events"):
         return "No events exist please create one"
@@ -14,6 +15,22 @@ def get_events():
         for file in os.listdir("events"):
             event_list.append((os.path.basename(file).removesuffix(".json")))
         return event_list
+
+def get_available_events():
+    if not os.path.isdir("events"):
+        # TO CHANGE user cant make events
+        return ["No events exist please create one"]
+    else:
+        event_list = []
+        for file in os.listdir("events"):
+            f = open("events/" + file, "r")
+            file_info = json.loads(f.read())
+            if file_info["Start date"] >= datetime.date.today() and file_info["Tickets"] != None:
+                event_list.append(file_info["Event name"])
+            f.close()
+        # if there are events but none upcoming
+        return event_list
+
 
 def find_popular_events():
     # TO DO
@@ -173,24 +190,16 @@ def initial_menu():
             print("Cannot go back from initial menu\n")
 
 def logged_in_menu():
-    user_input = input("Select an option: View all events [V]")
+    user_input = input("Select an option: View all events [V], View upcoming available events [U] ")
     if user_input == "V":
-        print(get_events())
+        print(get_all_events())
+    elif user_input == "U":
+        print(get_available_events())
     return
 
 
 def main():
     # TO DO
-
-    # testing with a events list can be change later
-    #event1 = Event()
-    #event1.setVenue("Club21")
-    #event1.setStartDate("12-12-2012")
-    #event1.setEndDate("13-12-2012")
-    #event1.setDescription("Student night")
-    #event1.setTickets(20)
-
-    #events = [event1]
 
     logged_in = False
     while not logged_in:
@@ -203,4 +212,5 @@ def main():
     #admin.viewAllEvents(events)
 
 
-main()
+if __name__ == "__main__":
+    main()
