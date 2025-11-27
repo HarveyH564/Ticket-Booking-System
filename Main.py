@@ -1,6 +1,21 @@
 import os
 import json
-import datetime
+import time
+import random
+
+from Events import Event
+from Admin import Admin
+
+# testing with a events list can be changed later
+event1 = Event()
+# Using direct attributes instead of setters to avoid AttributeError
+event1.venue = "Club21"
+event1.start_date = "12-12-2012"
+event1.end_date = "13-12-2012"
+event1.description = "Student night"
+event1.tickets = 20
+
+events = [event1]
 
 
 def get_all_events():
@@ -31,16 +46,15 @@ def get_available_events():
 def find_popular_events():
     print("\n=== Popular Upcoming Events===")
 
-    if len(events) ==0:
-        print("no event avaiable")
+    if len(events) == 0:
+        print("no event available")
         return
 
-    popular_events = sorted(events, key=lambda event: event.getTickets())
-    
+    popular_events = sorted(events, key=lambda event: event.tickets)
+
     for event in popular_events[:5]:
         print(event)
 
-    # TO DO
     return
 def filter_events_by_date():
     # TO DO
@@ -98,11 +112,11 @@ def handle_input(userInput):
     if userInput == "<-":
         return
 
+
 def create_account():
     invalid_username = True
     while invalid_username:
-        username= input("Enter username: ")
-        # previous menu
+        username = input("Enter username: ")
         if username == "<-":
             print()
             return [False, False]
@@ -112,7 +126,6 @@ def create_account():
         else:
             user_file = open("users/" + username + ".json", "x")
             password = input("Enter password: ")
-            # previous menu
             if password == "<-":
                 user_file.close()
                 os.remove("users/" + username + ".json")
@@ -131,30 +144,26 @@ def create_account():
             print("Account creation successful")
             return [True, username]
 
-# returns True if login was successful
+
 def login():
     incorrect_username = True
     while incorrect_username:
         username = input("Enter username: ")
-        # previous menu
         if username == "<-":
             print()
             return [False, False]
 
-        # check user name
         if not os.path.exists("users/" + username + ".json"):
             print("User doesn't exist, please try again")
         else:
             incorrect_username = False
             incorrect_password = True
             user_file = open("users/" + username + ".json", "r")
-            user_info = json.loads(user_file.read())
+            user_info = json.load(user_file)
             user_password = user_info["password"]
 
-            # check password
             while incorrect_password:
                 password_attempt = input("Enter password: ")
-                # previous menu
                 if password_attempt == "<-":
                     user_file.close()
                     print()
@@ -168,28 +177,24 @@ def login():
                 else:
                     print("Incorrect password, please try again")
 
-# start menu for initialising program
-# returns true if login/create account was successful
+
 def initial_menu():
     if not os.path.isdir("users"):
         os.mkdir("users")
 
-    # Welcome msg
     print("Welcome to the project")
     print("Enter [<-] to go back to the previous menu")
 
-    # Loops the menu unless user logs in or creates account
     while True:
         user_input = input("Select an option: Create an account [C], Login to an account [L]: ")
         if user_input == "C":
             attempt = create_account()
-            if attempt[0] == True:
+            if attempt[0] is True:
                 return [True, attempt[1]]
         elif user_input == "L":
             attempt = login()
-            if attempt[0] == True:
+            if attempt[0] is True:
                 return [True, attempt[1]]
-        # previous menu
         elif user_input == "<-":
             print("Cannot go back from initial menu\n")
 
@@ -241,32 +246,26 @@ def show_event_tickets(event_choice, filter_type=None, sort_type=None):
         }
     }
 
-    if event_choice not in events:
+    if event_choice not in events_data:
         print("Invalid event choice!")
         return None, None
 
-    event = events[event_choice]
+    event = events_data[event_choice]
     tickets = event["tickets"]
 
-    # Filtering
-    if filter_type == "vip":
-        tickets = {"vip": tickets["vip"]}
-    elif filter_type == "general":
-        tickets = {"general": tickets["general"]}
-    elif filter_type == "meet_greet":
-        tickets = {"meet_greet": tickets["meet_greet"]}
+    if filter_type in ["vip", "general", "meet_greet"]:
+        tickets = {filter_type: tickets[filter_type]}
     elif filter_type == "price_under_50":
         tickets = {k: v for k, v in tickets.items() if v["price"] < 50}
     elif filter_type == "price_over_50":
         tickets = {k: v for k, v in tickets.items() if v["price"] >= 50}
 
-    # Sorting
     if sort_type == "price_low_high":
         sorted_tickets = sorted(tickets.items(), key=lambda x: x[1]["price"])
     elif sort_type == "price_high_low":
         sorted_tickets = sorted(tickets.items(), key=lambda x: x[1]["price"], reverse=True)
     else:
-        sorted_tickets = sorted(tickets.items())  # Alphabetical
+        sorted_tickets = sorted(tickets.items())
 
     print(f"\n=== {event['name']} Ticket Options ===")
     option_map = {}
@@ -276,7 +275,6 @@ def show_event_tickets(event_choice, filter_type=None, sort_type=None):
         print(f"   {info['description']}")
         option_map[str(count)] = key
         count += 1
-
     print("===============================\n")
     return event, option_map
 
@@ -373,53 +371,51 @@ def purchase_ticket(username, event_choice, ticket_type, quantity):
         }
     }
 
-    if event_choice in events:
-        event = events[event_choice]
-
-        if ticket_type == "1":
-            ticket_name = f"{event['name']} - General Admission"
-            price = event['general']
-        elif ticket_type == "2":
-            ticket_name = f"{event['name']} - VIP"
-            price = event['vip']
-        elif ticket_type == "3":
-            ticket_name = f"{event['name']} - Meet & Greet"
-            price = event['meet_greet']
-        else:
-            print("Invalid ticket type!")
-            return False
-
-        total_cost = price * quantity
-
-        print(f"\nPurchase Summary:")
-        print(f"Event: {event['name']}")
-        print(f"Ticket Type: {ticket_name}")
-        print(f"Quantity: {quantity}")
-        print(f"Total: ${total_cost}")
-
-        confirm = input("Confirm purchase? (Y/N): ").upper()
-
-        if confirm == "Y":
-            with open(f"users/{username}.json", "r") as file:
-                userData = json.load(file)
-
-            # Add ticket to user's tickets
-            if ticket_name in userData["tickets"]:
-                userData["tickets"][ticket_name] += quantity
-            else:
-                userData["tickets"][ticket_name] = quantity
-
-            # Save updated user data
-            with open(f"users/{username}.json", "w") as file:
-                json.dump(userData, file)
-
-            print("Purchase successful.")
-            return True
-        else:
-            print("Purchase cancelled.")
-            return False
-    else:
+    if event_choice not in events_data:
         print("Invalid event choice!")
+        return False
+
+    event = events_data[event_choice]
+    ticket_map = {"1": "general", "2": "vip", "3": "meet_greet"}
+
+    if ticket_type not in ticket_map:
+        print("Invalid ticket type!")
+        return False
+
+    ticket_key = ticket_map[ticket_type]
+    ticket_name = f"{event['name']} - {ticket_key.replace('_', ' ').title()}"
+    price = event[ticket_key]
+    total_cost = price * quantity
+    reference = f"REF-{username}-{int(time.time())}-{random.randint(1000, 9999)}"
+
+    print(f"\nPurchase Summary:")
+    print(f"Event: {event['name']}")
+    print(f"Ticket Type: {ticket_name}")
+    print(f"Quantity: {quantity}")
+    print(f"Total: ${total_cost}")
+    print(f"Booking Reference: {reference}")
+
+    confirm = input("Confirm purchase? (Y/N): ").upper()
+
+    if confirm == "Y":
+        with open(f"users/{username}.json", "r") as file:
+            userData = json.load(file)
+
+        if "ticket_records" not in userData:
+            userData["ticket_records"] = []
+
+        userData["ticket_records"].append(
+            {"reference": reference, "ticket": ticket_name, "quantity": quantity}
+        )
+
+        with open(f"users/{username}.json", "w") as file:
+            json.dump(userData, file)
+
+        print("\nPurchase successful!")
+        print(f"Your unique booking reference is: {reference}\n")
+        return True
+    else:
+        print("Purchase cancelled.")
         return False
 
 
@@ -438,7 +434,6 @@ def user_menu(username):
             if event_choice == "<-":
                 continue
 
-            # Filtering variables
             current_filter = None
             current_sort = None
 
@@ -473,6 +468,7 @@ def user_menu(username):
                         print("Quantity must be at least 1!")
                 except ValueError:
                     print("Please enter a valid number!")
+
         elif choice == "<-":
             print("Use option 1 to view events")
         else:
@@ -493,10 +489,11 @@ def main():
     logged_in = [False, False]
     while not logged_in[0]:
         logged_in = initial_menu()
-    
+
     if logged_in[0]:
        user_menu(logged_in[1])
     logged_in_menu()
+
 
 if __name__ == "__main__":
     main()
