@@ -176,7 +176,7 @@ def initial_menu():
         if user_input == "C":
             attempt = create_account()
             if attempt[0] == True:
-                return [True, attmept[1]]
+                return [True, attempt[1]]
         elif user_input == "L":
             attempt = login()
             if attempt[1] == True:
@@ -344,29 +344,12 @@ def Main():
     print("=== Simple Ticket System ===")
 
     logged_in = [False, False]
-    while logged_in[0] == False:
+    while not logged_in[0]:
         # will become true if user logs in or creates account
         logged_in = initial_menu()
     
-    if logged_in[0] = True
+    if logged_in[0]:
         userMenu(logged_in[1])
-
-
-    
-    while True:
-        username = initialMenu()
-
-        if username:
-            userMenu(username)
-
-        # Ask if user wants to exit completely
-        exit_choice = input("Do you want to exit the program? (Y/N): ").upper()
-        if exit_choice == "Y":
-            print("Thank you for using the Ticket System!")
-            break
-
-    admin = Admin()
-    admin.viewAllEvents(events)
 
 if __name__ == "__main__":
     Main()
