@@ -3,7 +3,7 @@ import json
 import datetime
 
 
-def getEvents():
+def get_all_events():
     # TO DO
     if not os.path.isdir("events"):
         return "No events exist please create one"
@@ -28,7 +28,7 @@ def get_available_events():
         # if there are events but none upcoming
         return event_list
 
-def findPopularEvents():
+def find_popular_events():
     print("\n=== Popular Upcoming Events===")
 
     if len(events) ==0:
@@ -42,59 +42,59 @@ def findPopularEvents():
 
     # TO DO
     return
-def filterEventsByDate():
+def filter_events_by_date():
     # TO DO
     return
-def filterEventsByTicketsLeft():
+def filter_events_by_tickets_left():
     # TO DO
     return
-def filterEventsByGenre():
+def filter_events_by_genre():
     # TO DO
     return
-def createUser():
+def create_user():
     # TO DO
     return
-def deleteUser():
+def delete_user():
     # TO DO
     return
-def updateUser():
+def update_user():
     # TO DO
     return
-def createEventMap():
+def create_event_map():
     # TO DO
     return
-def createTicketMap():
+def create_ticket_map():
     # TO DO
     return
-def createTicket():
+def create_ticket():
     # TO DO
     return
-def deleteTicket():
+def delete_ticket():
     # TO DO
     return
-def sendReminder():
+def send_reminder():
     # TO DO
     return
-def createQuestion():
+def create_question():
     # TO DO
     return
-def deleteQuestion():
+def delete_question():
     # TO DO
     return
-def respondToQuestion():
+def respond_to_question():
     # TO DO
     return
-def getEventsAdmin():
+def get_events_admin():
     # TO DO
     return
-def updateEvent():
+def update_event():
     # TO DO
     return
-def deleteEvent():
+def delete_event():
     # TO DO
     return
 
-def handleInput(userInput):
+def handle_input(userInput):
     if userInput == "<-":
         return
 
@@ -194,7 +194,7 @@ def initial_menu():
             print("Cannot go back from initial menu\n")
 
 
-def showAvailableEvents():
+def show_available_events():
     # Available events
     print("\n=== Available Events ===")
     print("1. Rock concert")
@@ -205,7 +205,7 @@ def showAvailableEvents():
 
 
 # Ticket options with filters
-def showEventTickets(event_choice, filter_type=None, sort_type=None):
+def show_event_tickets(event_choice, filter_type=None, sort_type=None):
     events = {
         "1": {
             "name": "Rock concert",
@@ -282,7 +282,7 @@ def showEventTickets(event_choice, filter_type=None, sort_type=None):
 
 
 # Filter menu
-def applyFiltersAndSorting(event_choice, current_filter=None, current_sort=None):
+def apply_filters_and_sorting(event_choice, current_filter=None, current_sort=None):
     filter_type = current_filter
     sort_type = current_sort
 
@@ -333,7 +333,7 @@ def applyFiltersAndSorting(event_choice, current_filter=None, current_sort=None)
             sort_type = sort_map.get(s, sort_type)
 
         elif ch == "3":
-            event, ticket_options = showEventTickets(event_choice, filter_type, sort_type)
+            event, ticket_options = show_event_tickets(event_choice, filter_type, sort_type)
             return event, ticket_options, filter_type, sort_type
 
         elif ch == "4":
@@ -345,7 +345,7 @@ def applyFiltersAndSorting(event_choice, current_filter=None, current_sort=None)
             return None, None, filter_type, sort_type
 
 
-def purchaseTicket(username, event_choice, ticket_type, quantity):
+def purchase_ticket(username, event_choice, ticket_type, quantity):
     events = {
         "1": {
             "name": "Rock concert",
@@ -423,7 +423,7 @@ def purchaseTicket(username, event_choice, ticket_type, quantity):
         return False
 
 
-def userMenu(username):
+def user_menu(username):
     # Menu for logged-in users
     while True:
         print(f"\n=== Welcome to the Ticket System, {username}! ===")
@@ -432,7 +432,7 @@ def userMenu(username):
         choice = input("Select an option (1): ")
 
         if choice == "1":
-            showAvailableEvents()
+            show_available_events()
             event_choice = input("Enter event number (1-4) or [<-] to go back: ")
 
             if event_choice == "<-":
@@ -442,7 +442,7 @@ def userMenu(username):
             current_filter = None
             current_sort = None
 
-            event, ticket_options = showEventTickets(event_choice, current_filter, current_sort)
+            event, ticket_options = show_event_tickets(event_choice, current_filter, current_sort)
 
             if event:
                 print("1. Buy Ticket")
@@ -450,7 +450,7 @@ def userMenu(username):
                 action = input("Select: ")
 
                 if action == "2":
-                    event, ticket_options, current_filter, current_sort = applyFiltersAndSorting(
+                    event, ticket_options, current_filter, current_sort = apply_filters_and_sorting(
                         event_choice, current_filter, current_sort
                     )
 
@@ -468,7 +468,7 @@ def userMenu(username):
                 try:
                     quantity = int(input("Enter quantity: "))
                     if quantity > 0:
-                        purchaseTicket(username, event_choice, ticket_type, quantity)
+                        purchase_ticket(username, event_choice, ticket_type, quantity)
                     else:
                         print("Quantity must be at least 1!")
                 except ValueError:
@@ -478,8 +478,16 @@ def userMenu(username):
         else:
             print("Invalid option! Please select 1.")
 
+def logged_in_menu():
+    user_input = input("Select an option: View all events [V], View upcoming available events [U] ")
+    if user_input == "V":
+        print(get_all_events())
+    elif user_input == "U":
+        print(get_available_events())
+    return
 
-def Main():
+
+def main():
     print("=== Simple Ticket System ===")
 
     logged_in = [False, False]
@@ -487,7 +495,8 @@ def Main():
         logged_in = initial_menu()
     
     if logged_in[0]:
-        userMenu(logged_in[1])
+       user_menu(logged_in[1])
+    logged_in_menu()
 
 if __name__ == "__main__":
-    Main()
+    main()
