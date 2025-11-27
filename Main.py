@@ -1,13 +1,37 @@
 import os
 import json
 
+from Events import Event
+from Admin import Admin
+
+# testing with a events list can be change later
+event1= Event()
+event1.setVenue("Club21")
+event1.setStartDate("12-12-2012")
+event1.setEndDate("13-12-2012")
+event1.setDescription("Studen night")
+event1.setTickets(20)
+
+events = [event1]
+
+
+
+
 def getEvents():
     # TO DO
     return
 def findPopularEvents():
-    # TO DO
-    return
-def filterEventsByLocation():
+    print("\n=== Popular Upcoming Events===")
+
+    if len(events) ==0:
+        print("no event avaiable")
+        return
+
+    popular_events = sorted(events, key=lambda event: event.getTickets())
+    
+    for event in popular_events[:5]:
+        print(event)
+
     # TO DO
     return
 def filterEventsByDate():
@@ -331,6 +355,8 @@ def Main():
             print("Thank you for using the Ticket System!")
             break
 
+    admin = Admin()
+    admin.viewAllEvents(events)
 
 if __name__ == "__main__":
     Main()
