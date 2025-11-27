@@ -2,10 +2,8 @@ import os
 import json
 import datetime
 
-from Events import Event
-from Admin import Admin
 
-def get_all_events():
+def getEvents():
     # TO DO
     if not os.path.isdir("events"):
         return "No events exist please create one"
@@ -195,13 +193,6 @@ def initial_menu():
         elif user_input == "<-":
             print("Cannot go back from initial menu\n")
 
-def logged_in_menu():
-    user_input = input("Select an option: View all events [V], View upcoming available events [U] ")
-    if user_input == "V":
-        print(get_all_events())
-    elif user_input == "U":
-        print(get_available_events())
-    return
 
 def showAvailableEvents():
     # Available events
@@ -213,41 +204,145 @@ def showAvailableEvents():
     print("=========================\n")
 
 
-def showEventTickets(event_choice):
-    # Display ticket options for selected event
+# Ticket options with filters
+def showEventTickets(event_choice, filter_type=None, sort_type=None):
     events = {
         "1": {
             "name": "Rock concert",
-            "general": 25,
-            "vip": 60
+            "tickets": {
+                "general": {"price": 25, "description": "General Admission"},
+                "vip": {"price": 60, "description": "VIP Access + Lounge"},
+                "meet_greet": {"price": 120, "description": "Meet & Greet Pass"}
+            }
         },
         "2": {
             "name": "Pop concert",
-            "general": 35,
-            "vip": 75
+            "tickets": {
+                "general": {"price": 35, "description": "General Admission"},
+                "vip": {"price": 75, "description": "VIP Front Row"},
+                "meet_greet": {"price": 150, "description": "Meet & Greet Pass"}
+            }
         },
         "3": {
             "name": "International band performance",
-            "general": 30,
-            "vip": 80
+            "tickets": {
+                "general": {"price": 30, "description": "General Admission"},
+                "vip": {"price": 80, "description": "VIP Premium Seating"},
+                "meet_greet": {"price": 200, "description": "Meet & Greet Backstage"}
+            }
         },
         "4": {
             "name": "Local band performance",
-            "general": 20,
-            "vip": 45
+            "tickets": {
+                "general": {"price": 20, "description": "General Admission"},
+                "vip": {"price": 45, "description": "VIP Backstage Pass"},
+                "meet_greet": {"price": 90, "description": "Meet & Greet Pass"}
+            }
         }
     }
 
-    if event_choice in events:
-        event = events[event_choice]
-        print(f"\n=== {event['name']} Ticket Options ===")
-        print(f"General Admission: ${event['general']}")
-        print(f"VIP Ticket: ${event['vip']}")
-        print("===============================")
-        return event
-    else:
+    if event_choice not in events:
         print("Invalid event choice!")
-        return None
+        return None, None
+
+    event = events[event_choice]
+    tickets = event["tickets"]
+
+    # Filtering
+    if filter_type == "vip":
+        tickets = {"vip": tickets["vip"]}
+    elif filter_type == "general":
+        tickets = {"general": tickets["general"]}
+    elif filter_type == "meet_greet":
+        tickets = {"meet_greet": tickets["meet_greet"]}
+    elif filter_type == "price_under_50":
+        tickets = {k: v for k, v in tickets.items() if v["price"] < 50}
+    elif filter_type == "price_over_50":
+        tickets = {k: v for k, v in tickets.items() if v["price"] >= 50}
+
+    # Sorting
+    if sort_type == "price_low_high":
+        sorted_tickets = sorted(tickets.items(), key=lambda x: x[1]["price"])
+    elif sort_type == "price_high_low":
+        sorted_tickets = sorted(tickets.items(), key=lambda x: x[1]["price"], reverse=True)
+    else:
+        sorted_tickets = sorted(tickets.items())  # Alphabetical
+
+    print(f"\n=== {event['name']} Ticket Options ===")
+    option_map = {}
+    count = 1
+    for key, info in sorted_tickets:
+        print(f"{count}. {key.title().replace('_', ' ')} - ${info['price']}")
+        print(f"   {info['description']}")
+        option_map[str(count)] = key
+        count += 1
+
+    print("===============================\n")
+    return event, option_map
+
+
+# Filter menu
+def applyFiltersAndSorting(event_choice, current_filter=None, current_sort=None):
+    filter_type = current_filter
+    sort_type = current_sort
+
+    while True:
+        print("\n=== Filter & Sort Options ===")
+        print("1. Apply Filter")
+        print("2. Apply Sorting")
+        print("3. View Tickets With Current Settings")
+        print("4. Clear Filters/Sorting")
+        print("5. Back")
+
+        ch = input("Select option: ")
+
+        if ch == "1":
+            print("\nFilters:")
+            print("1. VIP Only")
+            print("2. General Only")
+            print("3. Meet & Greet Only")
+            print("4. Price Under $50")
+            print("5. Price $50 And Above")
+            print("6. Remove Filter")
+
+            f = input("Select: ")
+            filter_map = {
+                "1": "vip",
+                "2": "general",
+                "3": "meet_greet",
+                "4": "price_under_50",
+                "5": "price_over_50",
+                "6": None
+            }
+            filter_type = filter_map.get(f, filter_type)
+
+        elif ch == "2":
+            print("\nSort:")
+            print("1. Price Low → High")
+            print("2. Price High → Low")
+            print("3. Alphabetical")
+            print("4. Remove Sorting")
+
+            s = input("Select: ")
+            sort_map = {
+                "1": "price_low_high",
+                "2": "price_high_low",
+                "3": None,
+                "4": None
+            }
+            sort_type = sort_map.get(s, sort_type)
+
+        elif ch == "3":
+            event, ticket_options = showEventTickets(event_choice, filter_type, sort_type)
+            return event, ticket_options, filter_type, sort_type
+
+        elif ch == "4":
+            filter_type = None
+            sort_type = None
+            print("Filters cleared.")
+
+        elif ch == "5":
+            return None, None, filter_type, sort_type
 
 
 def purchaseTicket(username, event_choice, ticket_type, quantity):
@@ -255,34 +350,41 @@ def purchaseTicket(username, event_choice, ticket_type, quantity):
         "1": {
             "name": "Rock concert",
             "general": 25,
-            "vip": 60
+            "vip": 60,
+            "meet_greet": 120
         },
         "2": {
             "name": "Pop concert",
             "general": 35,
-            "vip": 75
+            "vip": 75,
+            "meet_greet": 150
         },
         "3": {
             "name": "International band performance",
             "general": 30,
-            "vip": 80
+            "vip": 80,
+            "meet_greet": 200
         },
         "4": {
             "name": "Local band performance",
             "general": 20,
-            "vip": 45
+            "vip": 45,
+            "meet_greet": 90
         }
     }
 
     if event_choice in events:
         event = events[event_choice]
 
-        if ticket_type == "1":  # General ticket
+        if ticket_type == "1":
             ticket_name = f"{event['name']} - General Admission"
             price = event['general']
-        elif ticket_type == "2":  # VIP ticket
+        elif ticket_type == "2":
             ticket_name = f"{event['name']} - VIP"
             price = event['vip']
+        elif ticket_type == "3":
+            ticket_name = f"{event['name']} - Meet & Greet"
+            price = event['meet_greet']
         else:
             print("Invalid ticket type!")
             return False
@@ -311,7 +413,7 @@ def purchaseTicket(username, event_choice, ticket_type, quantity):
             with open(f"users/{username}.json", "w") as file:
                 json.dump(userData, file)
 
-            print("Purchase was successful, Thank you.")
+            print("Purchase successful.")
             return True
         else:
             print("Purchase cancelled.")
@@ -336,12 +438,32 @@ def userMenu(username):
             if event_choice == "<-":
                 continue
 
-            event = showEventTickets(event_choice)
+            # Filtering variables
+            current_filter = None
+            current_sort = None
+
+            event, ticket_options = showEventTickets(event_choice, current_filter, current_sort)
+
             if event:
-                print("Select ticket type:")
-                print("1. General Admission")
-                print("2. VIP")
-                ticket_type = input("Enter ticket type (1-2): ")
+                print("1. Buy Ticket")
+                print("2. Filter / Sort Tickets")
+                action = input("Select: ")
+
+                if action == "2":
+                    event, ticket_options, current_filter, current_sort = applyFiltersAndSorting(
+                        event_choice, current_filter, current_sort
+                    )
+
+                print("Select ticket number to buy:")
+                ticket_num = input("Enter: ")
+
+                if ticket_num not in ticket_options:
+                    print("Invalid selection.")
+                    continue
+
+                type_map = {"general": "1", "vip": "2", "meet_greet": "3"}
+                ticket_key = ticket_options[ticket_num]
+                ticket_type = type_map[ticket_key]
 
                 try:
                     quantity = int(input("Enter quantity: "))
@@ -354,51 +476,18 @@ def userMenu(username):
         elif choice == "<-":
             print("Use option 1 to view events")
         else:
-            print("Invalid option! Please select 1 to view events.")
+            print("Invalid option! Please select 1.")
 
-def add_ticket_to_cart(ticket, user):
-    if not os.path.exists("users/" + user + ".json"):
-        print("User doesn't exist, please try again")
-    else:
-        file = open("users/" + user + ".json", "r")
-        user_info = json.loads(file.read())
-        if user_info["cart"] == None:
-            user_info["cart"][ticket] = 1
-        else:
-            user_info["cart"][ticket] = 1
-        file = open("users/" + user + ".json", "w")
-        json.dump(user_info, file)
-        file.close()
-
-def remove_ticket_from_cart(ticket, user):
-    if not os.path.exists("users/" + user + ".json"):
-        print("User doesn't exist, please try again")
-    else:
-        file = open("users/" + user + ".json", "r+")
-        user_info = json.loads(file.read())
-        if user_info["cart"] is None:
-            print("User has no tickets")
-        else:
-            if ticket in user_info["cart"]:
-                user_info["cart"].pop(ticket)
-                file = open("users/" + user + ".json", "w")
-                json.dump(user_info, file)
-                print("Ticket removed!")
-            else:
-                print("Ticket already removed!")
-        file.close()
 
 def Main():
     print("=== Simple Ticket System ===")
 
     logged_in = [False, False]
-    while logged_in[0] == False:
-        # will become true if user logs in or creates account
+    while not logged_in[0]:
         logged_in = initial_menu()
+    
     if logged_in[0]:
-        #logged_in_menu()
-        remove_ticket_from_cart("Ticket 1", "user1")
-    #    userMenu(logged_in[1])
+        userMenu(logged_in[1])
 
 if __name__ == "__main__":
     Main()
