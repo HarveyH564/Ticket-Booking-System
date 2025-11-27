@@ -1,1 +1,1 @@
-{"username": "Singh04", "password": "Singh", "tickets": {"Local band performance - VIP": 2, "Pop concert - General Admission": 2, "Pop concert - VIP": 2}, "cart": {}}
+{"username": "Singh04", "password": "Singh", "tickets": {"Local band performance - VIP": 2, "Pop concert - General Admission": 2, "Pop concert - VIP": 2}, "cart": {}, "ticket_records": [{"reference": "REF-Singh04-1764268484-8026", "ticket": "Rock concert - Vip", "quantity": 2}, {"reference": "REF-Singh04-1764268743-7912", "ticket": "Rock concert - Vip", "quantity": 2}]}
