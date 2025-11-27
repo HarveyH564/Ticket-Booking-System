@@ -25,7 +25,7 @@ def get_available_events():
         for file in os.listdir("events"):
             f = open("events/" + file, "r")
             file_info = json.loads(f.read())
-            if file_info["Start date"] >= datetime.date.today() and file_info["Tickets"] != None:
+            if datetime.datetime.strptime(file_info["Start date"], "%d-%m-%Y").date() >= datetime.date.today() and file_info["Tickets"] != None:
                 event_list.append(file_info["Event name"])
             f.close()
         # if there are events but none upcoming
