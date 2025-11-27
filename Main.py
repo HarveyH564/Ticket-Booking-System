@@ -1,6 +1,7 @@
 import os
 import json
 from Events import Event
+from Venue import Venue
 from Admin import Admin
 
 
@@ -89,14 +90,14 @@ def create_account():
                 os.remove("users/" + username + ".json")
                 print()
                 return False
-            userInfo = {
+            user_info = {
                 "username": username,
                 "password": password,
                 "tickets": {},
                 "cart": {}
             }
-            jsonInput = json.dumps(userInfo)
-            user_file.write(jsonInput)
+            json_input = json.dumps(user_info)
+            user_file.write(json_input)
             user_file.close()
             invalid_username = False
             print("Account creation successful")
@@ -113,7 +114,7 @@ def login():
             return False
 
         # check user name
-        if not os.path.exists("users/" + username + ".json") or not os.isdir():
+        if not os.path.exists("users/" + username + ".json"):
             print("User doesn't exist, please try again")
         else:
             incorrect_username = False
@@ -165,7 +166,7 @@ def initial_menu():
             print("Cannot go back from initial menu\n")
 
 
-def Main():
+def main():
     # TO DO
 
     # testing with a events list can be change later
@@ -187,4 +188,4 @@ def Main():
     #admin.viewAllEvents(events)
 
 
-Main()
+#main()

@@ -1,7 +1,9 @@
+import ast
+
 class Venue():
-    def __init__(self, seats):
-        self.seats = seats
-        self.location = ""
+    def __init__(self):
+        self.seats = None
+        self.location = None
 
     def set_location(self, location):
         self.location = location
@@ -21,3 +23,6 @@ class Venue():
             for seat in row:
                 row_list += str(seat)
             print(row_list)
+
+    def __str__(self):
+        return self.location

@@ -1,13 +1,21 @@
+import json
 import os
 
 class Event():
     def __init__(self):
         # TO DO
+        self.event_name = None
         self.venue = None
         self.tickets = None
         self.start_date = None
         self.end_date = None
         self.description = None
+
+    def set_event_name(self, event_name):
+        self.event_name = event_name
+
+    def get_event_name(self):
+        return self.event_name
 
     def set_venue(self, venue):
         self.venue = venue
@@ -45,3 +53,20 @@ class Event():
     def save_event(self):
         if not os.path.isdir("events"):
             os.mkdir("events")
+        else:
+            if os.path.exists("events/" + self.event_name):
+                print("Event already exists, update or delete it")
+            else:
+                event_file = open("events/" + self.event_name + ".json", "w")
+                event_info = {
+                    "Event name": self.event_name,
+                    "Venue": self.venue.get_location(),
+                    "Tickets": self.tickets,
+                    "Start date": self.start_date,
+                    "End date": self.end_date,
+                    "Description": self.description
+                }
+                json_input = json.dumps(event_info)
+                event_file.write(json_input)
+                event_file.close()
+                print("Event saved successfully")
