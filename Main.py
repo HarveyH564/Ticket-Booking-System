@@ -356,6 +356,37 @@ def userMenu(username):
         else:
             print("Invalid option! Please select 1 to view events.")
 
+def add_ticket(ticket, user):
+    if not os.path.exists("users/" + user + ".json"):
+        print("User doesn't exist, please try again")
+    else:
+        file = open("users/" + user + ".json", "r")
+        user_info = json.loads(file.read())
+        if user_info["tickets"] == None:
+            user_info["tickets"][ticket] = 1
+        else:
+            user_info["tickets"][ticket] = 1
+        file = open("users/" + user + ".json", "w")
+        json.dump(user_info, file)
+        file.close()
+
+def remove_ticket(ticket, user):
+    if not os.path.exists("users/" + user + ".json"):
+        print("User doesn't exist, please try again")
+    else:
+        file = open("users/" + user + ".json", "r+")
+        user_info = json.loads(file.read())
+        if user_info["tickets"] is None:
+            print("User has no tickets")
+        else:
+            if ticket in user_info["tickets"]:
+                user_info["tickets"].pop(ticket)
+                file = open("users/" + user + ".json", "w")
+                json.dump(user_info, file)
+                print("Ticket removed!")
+            else:
+                print("Ticket already removed!")
+        file.close()
 
 def Main():
     print("=== Simple Ticket System ===")
@@ -364,9 +395,9 @@ def Main():
     while logged_in[0] == False:
         # will become true if user logs in or creates account
         logged_in = initial_menu()
-
     if logged_in[0]:
-        logged_in_menu()
+        #logged_in_menu()
+        remove_ticket("Ticket 1", "user1")
     #    userMenu(logged_in[1])
 
 if __name__ == "__main__":

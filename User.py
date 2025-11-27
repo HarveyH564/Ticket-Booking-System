@@ -26,5 +26,11 @@ class User():
     def set_cart(self, cart):
         self.cart = cart
 
+    def add_to_cart(self, ticket):
+        self.cart.append(ticket)
+
+    def remove_from_cart(self, ticket):
+        self.cart.remove(ticket)
+
     def get_cart(self):
         return self.cart
