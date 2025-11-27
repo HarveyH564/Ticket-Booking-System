@@ -2,9 +2,9 @@ import os
 import json
 import time
 import random
+import Menus
 
 from Events import Event
-from Admin import Admin
 
 # testing with a events list can be changed later
 event1 = Event()
@@ -16,32 +16,6 @@ event1.description = "Student night"
 event1.tickets = 20
 
 events = [event1]
-
-
-def get_all_events():
-    # TO DO
-    if not os.path.isdir("events"):
-        return "No events exist please create one"
-    else:
-        event_list = []
-        for file in os.listdir("events"):
-            event_list.append((os.path.basename(file).removesuffix(".json")))
-        return event_list
-
-def get_available_events():
-    if not os.path.isdir("events"):
-        # TO CHANGE user cant make events
-        return ["No events exist please create one"]
-    else:
-        event_list = []
-        for file in os.listdir("events"):
-            f = open("events/" + file, "r")
-            file_info = json.loads(f.read())
-            if datetime.datetime.strptime(file_info["Start date"], "%d-%m-%Y").date() >= datetime.date.today() and file_info["Tickets"] != None:
-                event_list.append(file_info["Event name"])
-            f.close()
-        # if there are events but none upcoming
-        return event_list
 
 def find_popular_events():
     print("\n=== Popular Upcoming Events===")
@@ -176,28 +150,6 @@ def login():
                     return [True, username]
                 else:
                     print("Incorrect password, please try again")
-
-
-def initial_menu():
-    if not os.path.isdir("users"):
-        os.mkdir("users")
-
-    print("Welcome to the project")
-    print("Enter [<-] to go back to the previous menu")
-
-    while True:
-        user_input = input("Select an option: Create an account [C], Login to an account [L]: ")
-        if user_input == "C":
-            attempt = create_account()
-            if attempt[0] is True:
-                return [True, attempt[1]]
-        elif user_input == "L":
-            attempt = login()
-            if attempt[0] is True:
-                return [True, attempt[1]]
-        elif user_input == "<-":
-            print("Cannot go back from initial menu\n")
-
 
 def show_available_events():
     # Available events
@@ -474,25 +426,16 @@ def user_menu(username):
         else:
             print("Invalid option! Please select 1.")
 
-def logged_in_menu():
-    user_input = input("Select an option: View all events [V], View upcoming available events [U] ")
-    if user_input == "V":
-        print(get_all_events())
-    elif user_input == "U":
-        print(get_available_events())
-    return
-
-
 def main():
     print("=== Simple Ticket System ===")
 
     logged_in = [False, False]
     while not logged_in[0]:
-        logged_in = initial_menu()
+        logged_in = Menus.initial_menu()
 
     if logged_in[0]:
        user_menu(logged_in[1])
-    logged_in_menu()
+    Menus.logged_in_menu()
 
 
 if __name__ == "__main__":

@@ -1,5 +1,40 @@
 import json
 import os
+import datetime
+
+def get_all_events():
+    # TO DO
+    if not os.path.isdir("events"):
+        return "No events exist please create one"
+    else:
+        event_list = []
+        for file in os.listdir("events"):
+            event_list.append((os.path.basename(file).removesuffix(".json")))
+        return event_list
+
+def get_available_events():
+    if not os.path.isdir("events"):
+        # TO CHANGE user cant make events
+        return ["No events exist please create one"]
+    else:
+        event_list = []
+        for file in os.listdir("events"):
+            f = open("events/" + file, "r")
+            file_info = json.loads(f.read())
+            if datetime.datetime.strptime(file_info["Start date"], "%d-%m-%Y").date() >= datetime.date.today() and file_info["Tickets"] != None:
+                event_list.append(file_info["Event name"])
+            f.close()
+        # if there are events but none upcoming
+        return event_list
+
+def show_available_events():
+    # Available events
+    print("\n=== Available Events ===")
+    print("1. Rock concert")
+    print("2. Pop concert")
+    print("3. International band performance")
+    print("4. Local band performance")
+    print("=========================\n")
 
 class Event():
     def __init__(self):
