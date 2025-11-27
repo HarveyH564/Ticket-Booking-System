@@ -1,20 +1,35 @@
+import datetime
 import os
 import json
-
 from Events import Event
+from Venue import Venue
 from Admin import Admin
 
-# testing with a events list can be change later
-event1= Event()
-event1.setVenue("Club21")
-event1.setStartDate("12-12-2012")
-event1.setEndDate("13-12-2012")
-event1.setDescription("Studen night")
-event1.setTickets(20)
 
-events = [event1]
+def get_all_events():
+    # TO DO
+    if not os.path.isdir("events"):
+        return "No events exist please create one"
+    else:
+        event_list = []
+        for file in os.listdir("events"):
+            event_list.append((os.path.basename(file).removesuffix(".json")))
+        return event_list
 
-
+def get_available_events():
+    if not os.path.isdir("events"):
+        # TO CHANGE user cant make events
+        return ["No events exist please create one"]
+    else:
+        event_list = []
+        for file in os.listdir("events"):
+            f = open("events/" + file, "r")
+            file_info = json.loads(f.read())
+            if datetime.datetime.strptime(file_info["Start date"], "%d-%m-%Y").date() >= datetime.date.today() and file_info["Tickets"] != None:
+                event_list.append(file_info["Event name"])
+            f.close()
+        # if there are events but none upcoming
+        return event_list
 
 
 def getEvents():
@@ -34,60 +49,60 @@ def findPopularEvents():
 
     # TO DO
     return
-def filterEventsByDate():
+def filter_events_by_date():
     # TO DO
     return
-def filterEventsByTicketsLeft():
+def filter_events_by_tickets_left():
     # TO DO
     return
-def filterEventsByGenre():
+def filter_events_by_genre():
     # TO DO
     return
-def createUser():
+def create_user():
     # TO DO
     return
-def deleteUser():
+def delete_user():
     # TO DO
     return
-def updateUser():
+def update_user():
     # TO DO
     return
-def createEventMap():
+def create_event_map():
     # TO DO
     return
-def createTicketMap():
+def create_ticket_map():
     # TO DO
     return
-def createTicket():
+def create_ticket():
     # TO DO
     return
-def deleteTicket():
+def delete_ticket():
     # TO DO
     return
-def sendReminder():
+def send_reminder():
     # TO DO
     return
-def createQuestion():
+def create_question():
     # TO DO
     return
-def deleteQuestion():
+def delete_question():
     # TO DO
     return
-def respondToQuestion():
+def respond_to_question():
     # TO DO
     return
-def getEventsAdmin():
+def get_events_admin():
     # TO DO
     return
-def updateEvent():
+def update_event():
     # TO DO
     return
-def deleteEvent():
+def delete_event():
     # TO DO
     return
 
-def handleInput(userInput):
-    if userInput == "<-":
+def handle_input(user_input):
+    if user_input == "<-":
         return
 
 def create_account():
@@ -184,6 +199,14 @@ def initial_menu():
         # previous menu
         elif user_input == "<-":
             print("Cannot go back from initial menu\n")
+
+def logged_in_menu():
+    user_input = input("Select an option: View all events [V], View upcoming available events [U] ")
+    if user_input == "V":
+        print(get_all_events())
+    elif user_input == "U":
+        print(get_available_events())
+    return
 
 
 def showAvailableEvents():
