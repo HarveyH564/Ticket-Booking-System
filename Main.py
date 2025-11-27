@@ -1,25 +1,35 @@
 import os
 import json
+import datetime
 
 from Events import Event
 from Admin import Admin
 
-# testing with a events list can be change later
-event1= Event()
-event1.setVenue("Club21")
-event1.setStartDate("12-12-2012")
-event1.setEndDate("13-12-2012")
-event1.setDescription("Studen night")
-event1.setTickets(20)
-
-events = [event1]
-
-
-
-
-def getEvents():
+def get_all_events():
     # TO DO
-    return
+    if not os.path.isdir("events"):
+        return "No events exist please create one"
+    else:
+        event_list = []
+        for file in os.listdir("events"):
+            event_list.append((os.path.basename(file).removesuffix(".json")))
+        return event_list
+
+def get_available_events():
+    if not os.path.isdir("events"):
+        # TO CHANGE user cant make events
+        return ["No events exist please create one"]
+    else:
+        event_list = []
+        for file in os.listdir("events"):
+            f = open("events/" + file, "r")
+            file_info = json.loads(f.read())
+            if datetime.datetime.strptime(file_info["Start date"], "%d-%m-%Y").date() >= datetime.date.today() and file_info["Tickets"] != None:
+                event_list.append(file_info["Event name"])
+            f.close()
+        # if there are events but none upcoming
+        return event_list
+
 def findPopularEvents():
     print("\n=== Popular Upcoming Events===")
 
@@ -185,6 +195,13 @@ def initial_menu():
         elif user_input == "<-":
             print("Cannot go back from initial menu\n")
 
+def logged_in_menu():
+    user_input = input("Select an option: View all events [V], View upcoming available events [U] ")
+    if user_input == "V":
+        print(get_all_events())
+    elif user_input == "U":
+        print(get_available_events())
+    return
 
 def showAvailableEvents():
     # Available events
@@ -347,9 +364,10 @@ def Main():
     while logged_in[0] == False:
         # will become true if user logs in or creates account
         logged_in = initial_menu()
-    
+
     if logged_in[0]:
-        userMenu(logged_in[1])
+        logged_in_menu()
+    #    userMenu(logged_in[1])
 
 if __name__ == "__main__":
     Main()
