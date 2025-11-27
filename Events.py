@@ -54,10 +54,10 @@ class Event():
         if not os.path.isdir("events"):
             os.mkdir("events")
         else:
-            if os.path.exists("events/" + self.event_name):
+            if os.path.exists("events/" + self.event_name.replace(" ", "_").lower()):
                 print("Event already exists, update or delete it")
             else:
-                event_file = open("events/" + self.event_name + ".json", "w")
+                event_file = open("events/" + self.event_name.replace(" ", "_").lower() + ".json", "w")
                 event_info = {
                     "Event name": self.event_name,
                     "Venue": self.venue.get_location(),

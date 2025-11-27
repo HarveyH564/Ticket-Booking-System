@@ -7,7 +7,14 @@ from Admin import Admin
 
 def get_events():
     # TO DO
-    return
+    if not os.path.isdir("events"):
+        return "No events exist please create one"
+    else:
+        event_list = []
+        for file in os.listdir("events"):
+            event_list.append((os.path.basename(file).removesuffix(".json")))
+        return event_list
+
 def find_popular_events():
     # TO DO
     return
@@ -153,17 +160,23 @@ def initial_menu():
     # Loops the menu unless user logs in or creates account
     while True:
         user_input = input("Select an option: Create an account [C], Login to an account [L]: ")
-        if user_input == "C" or "c":
+        if user_input == "C":
             attempt = create_account()
             if attempt == True:
                 return True
-        elif user_input == "L" or "l":
+        elif user_input == "L":
             attempt = login()
             if attempt == True:
                 return True
         # previous menu
         elif user_input == "<-":
             print("Cannot go back from initial menu\n")
+
+def logged_in_menu():
+    user_input = input("Select an option: View all events [V]")
+    if user_input == "V":
+        print(get_events())
+    return
 
 
 def main():
@@ -184,8 +197,10 @@ def main():
         # will become true if user logs in or creates account
         logged_in = initial_menu()
 
+    logged_in_menu()
+
     #admin = Admin()
     #admin.viewAllEvents(events)
 
 
-#main()
+main()
