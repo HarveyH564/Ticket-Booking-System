@@ -1,23 +1,28 @@
-class Venue():
-    def __init__(self, seats):
-        self.seats = seats
-        self.location = ""
+import ast
 
-    def setLocation(self, location):
+class Venue():
+    def __init__(self):
+        self.seats = None
+        self.location = None
+
+    def set_location(self, location):
         self.location = location
 
-    def getLocation(self):
+    def get_location(self):
         return self.location
 
-    def setSeats(self, seats):
+    def set_seats(self, seats):
         self.seats = seats
 
-    def getSeats(self):
+    def get_seats(self):
         return self.seats
 
-    def printSeats(self):
+    def print_seats(self):
         for row in self.seats:
-            rowList = ""
+            row_list = ""
             for seat in row:
-                rowList += str(seat)
-            print(rowList)
+                row_list += str(seat)
+            print(row_list)
+
+    def __str__(self):
+        return self.location
