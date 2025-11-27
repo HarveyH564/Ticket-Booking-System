@@ -90,95 +90,99 @@ def handleInput(userInput):
     if userInput == "<-":
         return
 
-def createAccount():
-    invalidUsername = True
-    while invalidUsername:
+def create_account():
+    invalid_username = True
+    while invalid_username:
         username= input("Enter username: ")
         # previous menu
         if username == "<-":
             print()
-            return False
+            return [False, False]
 
         if os.path.exists("users/" + username + ".json"):
             print("Username is taken, please try again")
         else:
-            userFile = open("users/" + username + ".json", "x")
+            user_file = open("users/" + username + ".json", "x")
             password = input("Enter password: ")
             # previous menu
             if password == "<-":
-                userFile.close()
+                user_file.close()
                 os.remove("users/" + username + ".json")
                 print()
-                return False
-            userInfo = {
+                return [False, False]
+            user_info = {
                 "username": username,
                 "password": password,
                 "tickets": {},
                 "cart": {}
             }
-            jsonInput = json.dumps(userInfo)
-            userFile.write(jsonInput)
-            userFile.close()
-            invalidUsername = False
+            json_input = json.dumps(user_info)
+            user_file.write(json_input)
+            user_file.close()
+            invalid_username = False
             print("Account creation successful")
-            return username
+            return [True, username]
 
 # returns True if login was successful
 def login():
-    incorrectUsername = True
-    while incorrectUsername:
+    incorrect_username = True
+    while incorrect_username:
         username = input("Enter username: ")
         # previous menu
         if username == "<-":
             print()
-            return False
+            return [False, False]
 
         # check user name
         if not os.path.exists("users/" + username + ".json"):
             print("User doesn't exist, please try again")
         else:
-            incorrectUsername = False
-            incorrectPassword = True
-            userFile = open("users/" + username + ".json", "r")
-            userInfo = json.loads(userFile.read())
-            userPassword = userInfo["password"]
+            incorrect_username = False
+            incorrect_password = True
+            user_file = open("users/" + username + ".json", "r")
+            user_info = json.loads(user_file.read())
+            user_password = user_info["password"]
 
             # check password
-            while incorrectPassword:
-                passwordAttempt = input("Enter password: ")
+            while incorrect_password:
+                password_attempt = input("Enter password: ")
                 # previous menu
-                if passwordAttempt == "<-":
-                    userFile.close()
+                if password_attempt == "<-":
+                    user_file.close()
                     print()
-                    incorrectPassword = True
-                    return False
-                elif passwordAttempt == userPassword:
-                    userFile.close()
-                    incorrectPassword = True
+                    incorrect_password = True
+                    return [False, False]
+                elif password_attempt == user_password:
+                    user_file.close()
+                    incorrect_password = True
                     print("Login successful")
-                    return username
+                    return [True, username]
                 else:
                     print("Incorrect password, please try again")
 
 # start menu for initialising program
 # returns true if login/create account was successful
-def initialMenu():
+def initial_menu():
+    if not os.path.isdir("users"):
+        os.mkdir("users")
+
     # Welcome msg
     print("Welcome to the project")
     print("Enter [<-] to go back to the previous menu")
 
     # Loops the menu unless user logs in or creates account
     while True:
-        userInput = input("Select an option: Create an account [C], Login to an account [L]: ")
-        if userInput == "C":
-            username = createAccount()  # Made change here to get username
-            if username:
-                return username
-        elif userInput == "L":
-            username = login()
-            if username:
-                return username # Before was return true
-        elif userInput == "<-":
+        user_input = input("Select an option: Create an account [C], Login to an account [L]: ")
+        if user_input == "C":
+            attempt = create_account()
+            if attempt[0] == True:
+                return [True, attmept[1]]
+        elif user_input == "L":
+            attempt = login()
+            if attempt[1] == True:
+                return [True, attempt[1]]
+        # previous menu
+        elif user_input == "<-":
             print("Cannot go back from initial menu\n")
 
 
@@ -337,12 +341,18 @@ def userMenu(username):
 
 
 def Main():
-    # Create users directory if it doesn't exist
-    if not os.path.exists("users"):
-        os.makedirs("users")
-
     print("=== Simple Ticket System ===")
 
+    logged_in = [False, False]
+    while logged_in[0] == False:
+        # will become true if user logs in or creates account
+        logged_in = initial_menu()
+    
+    if logged_in[0] = True
+        userMenu(logged_in[1])
+
+
+    
     while True:
         username = initialMenu()
 
