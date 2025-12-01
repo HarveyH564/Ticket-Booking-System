@@ -3,8 +3,8 @@ import json
 import time
 import random
 import Menus
-
 from Events import Event
+
 
 # testing with a events list can be changed later
 event1 = Event()
@@ -29,6 +29,7 @@ def find_popular_events():
     for event in popular_events[:5]:
         print(event)
 
+    # TO DO
     return
 def filter_events_by_date():
     # TO DO
@@ -86,11 +87,11 @@ def handle_input(userInput):
     if userInput == "<-":
         return
 
-
 def create_account():
     invalid_username = True
     while invalid_username:
-        username = input("Enter username: ")
+        username= input("Enter username: ")
+        # previous menu
         if username == "<-":
             print()
             return [False, False]
@@ -100,6 +101,7 @@ def create_account():
         else:
             user_file = open("users/" + username + ".json", "x")
             password = input("Enter password: ")
+            # previous menu
             if password == "<-":
                 user_file.close()
                 os.remove("users/" + username + ".json")
@@ -118,26 +120,30 @@ def create_account():
             print("Account creation successful")
             return [True, username]
 
-
+# returns True if login was successful
 def login():
     incorrect_username = True
     while incorrect_username:
         username = input("Enter username: ")
+        # previous menu
         if username == "<-":
             print()
             return [False, False]
 
+        # check user name
         if not os.path.exists("users/" + username + ".json"):
             print("User doesn't exist, please try again")
         else:
             incorrect_username = False
             incorrect_password = True
             user_file = open("users/" + username + ".json", "r")
-            user_info = json.load(user_file)
+            user_info = json.loads(user_file.read())
             user_password = user_info["password"]
 
+            # check password
             while incorrect_password:
                 password_attempt = input("Enter password: ")
+                # previous menu
                 if password_attempt == "<-":
                     user_file.close()
                     print()
@@ -300,26 +306,22 @@ def purchase_ticket(username, event_choice, ticket_type, quantity):
         "1": {
             "name": "Rock concert",
             "general": 25,
-            "vip": 60,
-            "meet_greet": 120
+            "vip": 60
         },
         "2": {
             "name": "Pop concert",
             "general": 35,
-            "vip": 75,
-            "meet_greet": 150
+            "vip": 75
         },
         "3": {
             "name": "International band performance",
             "general": 30,
-            "vip": 80,
-            "meet_greet": 200
+            "vip": 80
         },
         "4": {
             "name": "Local band performance",
             "general": 20,
-            "vip": 45,
-            "meet_greet": 90
+            "vip": 45
         }
     }
 
@@ -371,7 +373,7 @@ def purchase_ticket(username, event_choice, ticket_type, quantity):
         return False
 
 
-def user_menu(username):
+def userMenu(username):
     # Menu for logged-in users
     while True:
         print(f"\n=== Welcome to the Ticket System, {username}! ===")
@@ -420,21 +422,54 @@ def user_menu(username):
                         print("Quantity must be at least 1!")
                 except ValueError:
                     print("Please enter a valid number!")
-
         elif choice == "<-":
             print("Use option 1 to view events")
         else:
-            print("Invalid option! Please select 1.")
+            print("Invalid option! Please select 1 to view events.")
+
+def add_ticket_to_cart(ticket, user):
+    if not os.path.exists("users/" + user + ".json"):
+        print("User doesn't exist, please try again")
+    else:
+        file = open("users/" + user + ".json", "r")
+        user_info = json.loads(file.read())
+        if user_info["cart"] == None:
+            user_info["cart"][ticket] = 1
+        else:
+            user_info["cart"][ticket] = 1
+        file = open("users/" + user + ".json", "w")
+        json.dump(user_info, file)
+        file.close()
+
+def remove_ticket_from_cart(ticket, user):
+    if not os.path.exists("users/" + user + ".json"):
+        print("User doesn't exist, please try again")
+    else:
+        file = open("users/" + user + ".json", "r+")
+        user_info = json.loads(file.read())
+        if user_info["cart"] is None:
+            print("User has no tickets")
+        else:
+            if ticket in user_info["cart"]:
+                user_info["cart"].pop(ticket)
+                file = open("users/" + user + ".json", "w")
+                json.dump(user_info, file)
+                print("Ticket removed!")
+            else:
+                print("Ticket already removed!")
+        file.close()
+
+
+
 
 def main():
     print("=== Simple Ticket System ===")
-
     logged_in = [False, False]
     while not logged_in[0]:
         logged_in = Menus.initial_menu()
 
     if logged_in[0]:
-       user_menu(logged_in[1])
+       Menus.user_menu(logged_in[1])
     Menus.logged_in_menu()
 
 
