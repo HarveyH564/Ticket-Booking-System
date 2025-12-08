@@ -1,68 +1,127 @@
 import json
 import os
+import sqlite3
 
 def create_account():
-    invalid_username = True
-    while invalid_username:
-        username = input("Enter username: ")
-        if username == "<-":
-            print()
-            return [False, False]
-
-        if os.path.exists("users/" + username + ".json"):
-            print("Username is taken, please try again")
-        else:
-            user_file = open("users/" + username + ".json", "x")
-            password = input("Enter password: ")
-            if password == "<-":
-                user_file.close()
-                os.remove("users/" + username + ".json")
+    sqlite_connection = None
+    try:
+        sqlite_connection = sqlite3.connect("sql.db")
+        cursor = sqlite_connection.cursor()
+        invalid_username = True
+        while invalid_username:
+            username = input("Enter username: ")
+            if username == "<-":
                 print()
                 return [False, False]
-            user_info = {
-                "username": username,
-                "password": password,
-                "tickets": {},
-                "cart": {}
-            }
-            json_input = json.dumps(user_info)
-            user_file.write(json_input)
-            user_file.close()
-            invalid_username = False
-            print("Account creation successful")
-            return [True, username]
+            else:
+                query = "SELECT * FROM Users WHERE Username='" + username + "'"
+                cursor.execute(query)
+                result = cursor.fetchone()
+                if result:
+                    print("User already exists")
+                else:
+                    password = input("Enter password: ")
+                    if password == "<-":
+                        return [False, False]
+                    else:
+                        query = "INSERT INTO Users(username, password) VALUES('" + username + "', '" + password + "')"
+                        print(query)
+                        cursor.execute(query)
+                        print("Account creation successful")
+                        return [True, username]
+
+    except sqlite3.Error as error:
+        print("Error: " + str(error))
+
+    finally:
+        if sqlite_connection:
+            sqlite_connection.commit()
+            sqlite_connection.close()
 
 def login():
-    incorrect_username = True
-    while incorrect_username:
-        username = input("Enter username: ")
-        if username == "<-":
-            print()
-            return [False, False]
+    sqlite_connection = None
+    try:
+        sqlite_connection = sqlite3.connect("sql.db")
+        cursor = sqlite_connection.cursor()
+        query = ""
+        cursor.execute(query)
 
-        if not os.path.exists("users/" + username + ".json"):
-            print("User doesn't exist, please try again")
-        else:
-            incorrect_username = False
-            incorrect_password = True
-            user_file = open("users/" + username + ".json", "r")
-            user_info = json.load(user_file)
-            user_password = user_info["password"]
+        incorrect_username = True
+        incorrect_password = None
+        while incorrect_username:
+            username = input("Enter username: ")
+            if username == "<-":
+                return [False, False]
 
-            while incorrect_password:
-                password_attempt = input("Enter password: ")
-                if password_attempt == "<-":
-                    user_file.close()
-                    print()
+            else:
+                query = "SELECT * FROM Users WHERE Username='" + username + "'"
+                cursor.execute(query)
+                result = cursor.fetchall()
+                if result:
+                    # break loop
+                    incorrect_username = False
                     incorrect_password = True
-                    return [False, False]
-                elif password_attempt == user_password:
-                    user_file.close()
-                    incorrect_password = True
-                    print("Login successful")
-                    return [True, username]
+
+                    # new loop
+                    while incorrect_password:
+                        password_attempt = input("Enter password: ")
+                        if password_attempt == "<-":
+                            return [False, False]
+                        elif password_attempt == result[0][2]:
+                            incorrect_password = False
+                            print("Login successful")
+                            return [True, username]
+                        else:
+                            print("Incorrect password, please try again")
+
+
                 else:
-                    print("Incorrect password, please try again")
+                    print("User doesn't exist, please try again")
+
+
+                while incorrect_password:
+                    password_attempt = input("Enter password: ")
+                    if password_attempt == "<-":
+                        user_file.close()
+                        print()
+                        incorrect_password = True
+                        return [False, False]
+                    elif password_attempt == user_password:
+                        user_file.close()
+                        incorrect_password = True
+                        print("Login successful")
+                        return [True, username]
+                    else:
+                        print("Incorrect password, please try again")
+
+
+    except sqlite3.Error as error:
+        print("Error: " + str(error))
+
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+
+def get_user(username):
+    sqlite_connection = None
+    try:
+        sqlite_connection = sqlite3.connect("sql.db")
+        cursor = sqlite_connection.cursor()
+        query = "SELECT * FROM Users WHERE Username='" + username + "'"
+        cursor.execute(query)
+        result = cursor.fetchall()
+        if result:
+            print(result[0][1])
+        else:
+            print("No such user")
+
+    except sqlite3.Error as error:
+        print("Error: " + str(error))
+
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+
 
 class User():
     def __init__(self):
