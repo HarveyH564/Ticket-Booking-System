@@ -3,92 +3,15 @@ import json
 import time
 import random
 import Menus
-import sqlite3
-from Events import Event
-
-def initialise_db():
-    try:
-        sqlite_connection = sqlite3.connect("sql.db")
-        cursor = sqlite_connection.cursor()
-        print("DB initialisation")
-
-        venue_table_creation_query = """
-CREATE TABLE IF NOT EXISTS Venues (
-    venue_id INTEGER PRIMARY KEY AUTOINCREMENT,
-    venue_name VARCHAR (30) NOT NULL,
-    location VARCHAR (30) NOT NULL
-);"""
-
-        seats_table_creation_query = """
-CREATE TABLE IF NOT EXISTS Seats (
-    seat_id INTEGER PRIMARY KEY AUTOINCREMENT,
-    seat_location VARCHAR (5),
-    venue_id INTEGER NOT NULL,
-    UNIQUE (seat_location, venue_id),
-    FOREIGN KEY (venue_id) REFERENCES Venues(venue_id)
-);"""
-
-        events_table_creation_query = """    
-CREATE TABLE IF NOT EXISTS Events (
-    event_id INTEGER PRIMARY KEY AUTOINCREMENT,
-    event_name VARCHAR (50) NOT NULL,
-    venue_id INTEGER NOT NULL,
-    start_date DATE NOT NULL,
-    end_date DATE,
-    description VARCHAR(255),
-    UNIQUE (event_name, venue_id, start_date),
-    FOREIGN KEY (venue_id) REFERENCES Venues(venue_id)
-);"""
-
-        users_table_creation_query = """
-CREATE TABLE IF NOT EXISTS Users (
-    user_id INTEGER PRIMARY KEY AUTOINCREMENT,
-    username VARCHAR(15) UNIQUE NOT NULL,
-    password VARCHAR(15) NOT NULL
-);"""
-
-        tickets_table_creation_query = """
-CREATE TABLE IF NOT EXISTS Tickets (
-    ticket_id INTEGER PRIMARY KEY AUTOINCREMENT,
-    event_id INTEGER NOT NULL,
-    seat_id INTEGER NOT NULL,
-    user_id INTEGER NOT NULL,
-    price REAL,
-    type VARCHAR (10),
-    FOREIGN KEY (event_id) REFERENCES Events(event_id),
-    FOREIGN KEY (seat_id) REFERENCES Seats(seat_id),
-    FOREIGN KEY (user_id) REFERENCES Users(user_id)
-);"""
-
-        get_all_tables_query = "SELECT name FROM sqlite_master WHERE type='table';"
-
-        cursor.execute(venue_table_creation_query)
-        cursor.execute(seats_table_creation_query)
-        cursor.execute(events_table_creation_query)
-        cursor.execute(users_table_creation_query)
-        cursor.execute(tickets_table_creation_query)
-        cursor.execute(get_all_tables_query)
-
-        result = cursor.fetchall()
-        print("Tables: " + str(result))
-
-        cursor.close()
-
-    except sqlite3.Error as error:
-        print("Error: " + str(error))
-
-    finally:
-        if sqlite_connection:
-            sqlite_connection.close()
-
-    return
+import Events
+import DatabaseFuncs as db
 
 def remove_all_tables():
 
     return
 
 # testing with a events list can be changed later
-event1 = Event()
+event1 = Events.Event()
 # Using direct attributes instead of setters to avoid AttributeError
 event1.venue = "Club21"
 event1.start_date = "12-12-2012"
@@ -502,7 +425,6 @@ def update_user_details(username):
 
 
 def user_menu(username):
-def userMenu(username):
     # Menu for logged-in users
     while True:
         print(f"\n=== Welcome to the Ticket System, {username}! ===")
@@ -566,14 +488,13 @@ def userMenu(username):
 def logged_in_menu():
     user_input = input("Select an option: View all events [V], View upcoming available events [U] ")
     if user_input == "V":
-        print(get_all_events())
+        print(Events.get_all_events())
     elif user_input == "U":
-        print(get_available_events())
-    return
-        elif choice == "<-":
-            print("Use option 1 to view events")
-        else:
-            print("Invalid option! Please select 1 to view events.")
+        print(Events.get_available_events())
+    elif user_input == "<-":
+        print("Use option 1 to view events")
+    else:
+        print("Invalid option! Please select 1 to view events.")
 
 def add_ticket_to_cart(ticket, user):
     if not os.path.exists("users/" + user + ".json"):
@@ -611,18 +532,17 @@ def remove_ticket_from_cart(ticket, user):
 
 
 def main():
+    db.initialise_db()
+
     print("=== Simple Ticket System ===")
     logged_in = [False, False]
     while not logged_in[0]:
         logged_in = Menus.initial_menu()
 
-    if logged_in[0]:
-        user_menu(logged_in[1])
-    logged_in_menu()
-       Menus.user_menu(logged_in[1])
-    Menus.logged_in_menu()
+    #if logged_in[0]:
+    #    user_menu(logged_in[1])
 
 
-#if __name__ == "__main__":
-#    main()
-initialise_db()
+
+if __name__ == "__main__":
+    main()
