@@ -2,6 +2,7 @@ import os
 import json
 import time
 import random
+import datetime
 
 from Events import Event
 from Admin import Admin
@@ -19,7 +20,6 @@ events = [event1]
 
 
 def get_all_events():
-    # TO DO
     if not os.path.isdir("events"):
         return "No events exist please create one"
     else:
@@ -28,9 +28,9 @@ def get_all_events():
             event_list.append((os.path.basename(file).removesuffix(".json")))
         return event_list
 
+
 def get_available_events():
     if not os.path.isdir("events"):
-        # TO CHANGE user cant make events
         return ["No events exist please create one"]
     else:
         event_list = []
@@ -40,8 +40,8 @@ def get_available_events():
             if datetime.datetime.strptime(file_info["Start date"], "%d-%m-%Y").date() >= datetime.date.today() and file_info["Tickets"] != None:
                 event_list.append(file_info["Event name"])
             f.close()
-        # if there are events but none upcoming
         return event_list
+
 
 def find_popular_events():
     print("\n=== Popular Upcoming Events===")
@@ -56,57 +56,75 @@ def find_popular_events():
         print(event)
 
     return
+
+
 def filter_events_by_date():
-    # TO DO
     return
+
+
 def filter_events_by_tickets_left():
-    # TO DO
     return
+
+
 def filter_events_by_genre():
-    # TO DO
     return
+
+
 def create_user():
-    # TO DO
     return
+
+
 def delete_user():
-    # TO DO
     return
+
+
 def update_user():
-    # TO DO
     return
+
+
 def create_event_map():
-    # TO DO
     return
+
+
 def create_ticket_map():
-    # TO DO
     return
+
+
 def create_ticket():
-    # TO DO
     return
+
+
 def delete_ticket():
-    # TO DO
     return
+
+
 def send_reminder():
-    # TO DO
     return
+
+
 def create_question():
-    # TO DO
     return
+
+
 def delete_question():
-    # TO DO
     return
+
+
 def respond_to_question():
-    # TO DO
     return
+
+
 def get_events_admin():
-    # TO DO
     return
+
+
 def update_event():
-    # TO DO
     return
+
+
 def delete_event():
-    # TO DO
     return
+
 
 def handle_input(userInput):
     if userInput == "<-":
@@ -200,7 +218,6 @@ def initial_menu():
 
 
 def show_available_events():
-    # Available events
     print("\n=== Available Events ===")
     print("1. Rock concert")
     print("2. Pop concert")
@@ -209,7 +226,6 @@ def show_available_events():
     print("=========================\n")
 
 
-# Ticket options with filters
 def show_event_tickets(event_choice, filter_type=None, sort_type=None):
     events = {
         "1": {
@@ -246,11 +262,11 @@ def show_event_tickets(event_choice, filter_type=None, sort_type=None):
         }
     }
 
-    if event_choice not in events_data:
+    if event_choice not in events:
         print("Invalid event choice!")
         return None, None
 
-    event = events_data[event_choice]
+    event = events[event_choice]
     tickets = event["tickets"]
 
     if filter_type in ["vip", "general", "meet_greet"]:
@@ -279,7 +295,6 @@ def show_event_tickets(event_choice, filter_type=None, sort_type=None):
     return event, option_map
 
 
-# Filter menu
 def apply_filters_and_sorting(event_choice, current_filter=None, current_sort=None):
     filter_type = current_filter
     sort_type = current_sort
@@ -371,11 +386,11 @@ def purchase_ticket(username, event_choice, ticket_type, quantity):
         }
     }
 
-    if event_choice not in events_data:
+    if event_choice not in events:
         print("Invalid event choice!")
         return False
 
-    event = events_data[event_choice]
+    event = events[event_choice]
     ticket_map = {"1": "general", "2": "vip", "3": "meet_greet"}
 
     if ticket_type not in ticket_map:
@@ -419,13 +434,45 @@ def purchase_ticket(username, event_choice, ticket_type, quantity):
         return False
 
 
+# Update details section
+def update_user_details(username):
+    user_file_path = f"users/{username}.json"
+    if not os.path.exists(user_file_path):
+        print("User file not found!")
+        return
+
+    with open(user_file_path, "r") as file:
+        user_data = json.load(file)
+
+    print("\n=== Update User Details ===")
+    new_username = input(f"Enter new username (leave blank to keep '{user_data['username']}'): ")
+    new_password = input("Enter new password (leave blank to keep current password): ")
+
+    if new_username:
+        new_user_file_path = f"users/{new_username}.json"
+        if os.path.exists(new_user_file_path):
+            print("Username already taken, please try again.")
+            return
+        os.rename(user_file_path, new_user_file_path)
+        user_data["username"] = new_username
+        username = new_username
+
+    if new_password:
+        user_data["password"] = new_password
+
+    with open(f"users/{username}.json", "w") as file:
+        json.dump(user_data, file)
+
+    print("User details updated successfully!\n")
+
+
 def user_menu(username):
-    # Menu for logged-in users
     while True:
         print(f"\n=== Welcome to the Ticket System, {username}! ===")
         print("1. View Available Events")
+        print("2. Update User Details")  # <-- Added option
 
-        choice = input("Select an option (1): ")
+        choice = input("Select an option (1-2): ")
 
         if choice == "1":
             show_available_events()
@@ -469,10 +516,15 @@ def user_menu(username):
                 except ValueError:
                     print("Please enter a valid number!")
 
+        elif choice == "2":  # update details
+            update_user_details(username)
+            username = username  # session username already updated inside function
+
         elif choice == "<-":
             print("Use option 1 to view events")
         else:
-            print("Invalid option! Please select 1.")
+            print("Invalid option! Please select 1 or 2.")
+
 
 def logged_in_menu():
     user_input = input("Select an option: View all events [V], View upcoming available events [U] ")
@@ -491,7 +543,7 @@ def main():
         logged_in = initial_menu()
 
     if logged_in[0]:
-       user_menu(logged_in[1])
+        user_menu(logged_in[1])
     logged_in_menu()
 
 
