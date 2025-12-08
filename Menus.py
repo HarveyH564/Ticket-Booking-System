@@ -1,11 +1,7 @@
-import os
 import User
 import Events
 
 def initial_menu():
-    if not os.path.isdir("users"):
-        os.mkdir("users")
-
     print("Welcome to the project")
     print("Enter [<-] to go back to the previous menu")
 
