@@ -1,5 +1,6 @@
 import sqlite3
 
+# This function is a skeleton for writing other functions to do with sqlite
 '''
 def db_connection_skeleton():
     sqlite_connection = None
@@ -8,6 +9,7 @@ def db_connection_skeleton():
         cursor = sqlite_connection.cursor()
         query = ""
         cursor.execute(query)
+        result = cursor.fetchall()
 
 
     except sqlite3.Error as error:
@@ -32,6 +34,7 @@ CREATE TABLE IF NOT EXISTS Venues (
     venue_id INTEGER PRIMARY KEY AUTOINCREMENT,
     venue_name VARCHAR (30) NOT NULL,
     location VARCHAR (30) NOT NULL
+    UNIQUE (venue_name, location)
 );"""
 
         seats_table_creation_query = """
@@ -75,7 +78,7 @@ CREATE TABLE IF NOT EXISTS Tickets (
     FOREIGN KEY (user_id) REFERENCES Users(user_id)
 );"""
 
-        get_all_tables_query = "SELECT name FROM sqlite_master WHERE type='table';"
+        #get_all_tables_query = "SELECT name FROM sqlite_master WHERE type='table';"
 
         cursor.execute(venue_table_creation_query)
         cursor.execute(seats_table_creation_query)
