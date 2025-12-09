@@ -34,7 +34,7 @@ CREATE TABLE IF NOT EXISTS Venues (
     venue_id INTEGER PRIMARY KEY AUTOINCREMENT,
     venue_name VARCHAR (30) NOT NULL,
     location VARCHAR (30) NOT NULL
-    UNIQUE (venue_name, location)
+    UNIQUE (venue_name, location)  
 );"""
 
         seats_table_creation_query = """
