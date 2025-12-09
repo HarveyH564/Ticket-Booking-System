@@ -2,6 +2,17 @@ import json
 import os
 import sqlite3
 
+def create_user():
+    return
+
+
+def delete_user():
+    return
+
+
+def update_user():
+    return
+
 def create_account():
     sqlite_connection = None
     try:
@@ -212,3 +223,34 @@ class User():
             # Go back option
         else:
             return self.username
+
+# Update details section
+def update_user_details(username):
+    user_file_path = f"users/{username}.json"
+    if not os.path.exists(user_file_path):
+        print("User file not found!")
+        return
+
+    with open(user_file_path, "r") as file:
+        user_data = json.load(file)
+
+    print("\n=== Update User Details ===")
+    new_username = input(f"Enter new username (leave blank to keep '{user_data['username']}'): ")
+    new_password = input("Enter new password (leave blank to keep current password): ")
+
+    if new_username:
+        new_user_file_path = f"users/{new_username}.json"
+        if os.path.exists(new_user_file_path):
+            print("Username already taken, please try again.")
+            return
+        os.rename(user_file_path, new_user_file_path)
+        user_data["username"] = new_username
+        username = new_username
+
+    if new_password:
+        user_data["password"] = new_password
+
+    with open(f"users/{username}.json", "w") as file:
+        json.dump(user_data, file)
+
+    print("User details updated successfully!\n")
