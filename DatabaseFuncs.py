@@ -7,7 +7,10 @@ def db_connection_skeleton():
     try:
         sqlite_connection = sqlite3.connect("sql.db")
         cursor = sqlite_connection.cursor()
+        # sqlite doesn't have foreign keys enabled by default must do this every connection
+        enable_foreign_keys = "PRAGMA foreign_keys = ON;"
         query = ""
+        cursor.execute(enable_foreign_keys)
         cursor.execute(query)
         result = cursor.fetchall()
 
@@ -28,6 +31,9 @@ def initialise_db():
         sqlite_connection = sqlite3.connect("sql.db")
         cursor = sqlite_connection.cursor()
         print("DB initialisation")
+
+        # sqlite doesn't have foreign keys enabled by default must do this every connection
+        enable_foreign_keys = "PRAGMA foreign_keys = ON;"
 
         venue_table_creation_query = """
 CREATE TABLE IF NOT EXISTS Venues (
@@ -80,6 +86,7 @@ CREATE TABLE IF NOT EXISTS Tickets (
 
         #get_all_tables_query = "SELECT name FROM sqlite_master WHERE type='table';"
 
+        cursor.execute(enable_foreign_keys)
         cursor.execute(venue_table_creation_query)
         cursor.execute(seats_table_creation_query)
         cursor.execute(events_table_creation_query)
@@ -93,10 +100,60 @@ CREATE TABLE IF NOT EXISTS Tickets (
         cursor.close()
 
     except sqlite3.Error as error:
-        print("Error: " + str(error))
+        print("Error in DatabaseFuncs.initialise_db(): " + str(error))
 
     finally:
         if sqlite_connection:
             sqlite_connection.close()
 
     return
+
+def get_all_tables():
+    sqlite_connection = None
+    try:
+        sqlite_connection = sqlite3.connect("sql.db")
+        cursor = sqlite_connection.cursor()
+        # sqlite doesn't have foreign keys enabled by default must do this every connection
+        enable_foreign_keys = "PRAGMA foreign_keys = ON;"
+        get_all_tables_query = "SELECT name FROM sqlite_master WHERE type='table';"
+        cursor.execute(enable_foreign_keys)
+        cursor.execute(get_all_tables_query)
+        result = cursor.fetchall()
+        return result
+
+
+    except sqlite3.Error as error:
+        print("Error: " + str(error))
+
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+
+def delete_all_tables():
+    sqlite_connection = None
+    try:
+        sqlite_connection = sqlite3.connect("sql.db")
+        cursor = sqlite_connection.cursor()
+        enable_foreign_keys = "PRAGMA foreign_keys = ON;"
+        get_all_tables_query = "SELECT name FROM sqlite_master WHERE type='table';"
+        cursor.execute(enable_foreign_keys)
+        cursor.execute(get_all_tables_query)
+        tables = ['Tickets', 'Users', 'Events', 'Seats', 'Venues']
+
+        for table in tables:
+            drop_query = "DROP TABLE IF EXISTS " + table + ";"
+            cursor.execute(drop_query)
+
+        # drop id increment to reset it
+        drop_query = "DELETE FROM sqlite_sequence;"
+        cursor.execute(drop_query)
+
+        print("Tables dropped")
+
+    except sqlite3.Error as error:
+        print("Error: " + str(error))
+
+    finally:
+        if sqlite_connection:
+            sqlite_connection.commit()
+            sqlite_connection.close()

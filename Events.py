@@ -207,12 +207,14 @@ def add_event(event_name, venue_id, start_date, end_date, description):
     try:
         sqlite_connection = sqlite3.connect("sql.db")
         cursor = sqlite_connection.cursor()
-        query = "INSERT INTO Events(event_name, venue_id, start_date, end_date, description) VALUES ('" + event_name +"', '" + str(venue_id) + "', '" + start_date + "', '" + end_date + "', '" + description + "')"
+        enable_foreign_keys = "PRAGMA foreign_keys = ON;"
+        query = "INSERT INTO Events(event_name, venue_id, start_date, end_date, description) VALUES ('" + event_name +"', '" + str(venue_id) + "', '" + start_date + "', '" + end_date + "', '" + description + "');"
+        cursor.execute(enable_foreign_keys)
         cursor.execute(query)
         print("Event created")
 
     except sqlite3.Error as error:
-        print("Error: " + str(error))
+        print("Error in Events.add_event(): " + str(error))
 
     finally:
         if sqlite_connection:
@@ -224,7 +226,9 @@ def get_all_events():
     try:
         sqlite_connection = sqlite3.connect("sql.db")
         cursor = sqlite_connection.cursor()
-        query = "SELECT * FROM EVENTS"
+        enable_foreign_keys = "PRAGMA foreign_keys = ON;"
+        query = "SELECT * FROM EVENTS;"
+        cursor.execute(enable_foreign_keys)
         cursor.execute(query)
         result = cursor.fetchall()
         if result:
@@ -235,7 +239,7 @@ def get_all_events():
 
 
     except sqlite3.Error as error:
-        print("Error: " + str(error))
+        print("Error in Events.get_all_events(): " + str(error))
 
     finally:
         if sqlite_connection:

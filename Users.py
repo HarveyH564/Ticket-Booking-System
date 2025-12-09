@@ -18,6 +18,8 @@ def create_account():
     try:
         sqlite_connection = sqlite3.connect("sql.db")
         cursor = sqlite_connection.cursor()
+        enable_foreign_keys = "PRAGMA foreign_keys = ON;"
+        cursor.execute(enable_foreign_keys)
         invalid_username = True
         while invalid_username:
             username = input("Enter username: ")
@@ -25,7 +27,7 @@ def create_account():
                 print()
                 return [False, False]
             else:
-                query = "SELECT * FROM Users WHERE Username='" + username + "'"
+                query = "SELECT * FROM Users WHERE Username='" + username + "';"
                 cursor.execute(query)
                 result = cursor.fetchone()
                 if result:
@@ -35,14 +37,14 @@ def create_account():
                     if password == "<-":
                         return [False, False]
                     else:
-                        query = "INSERT INTO Users(username, password) VALUES('" + username + "', '" + password + "')"
+                        query = "INSERT INTO Users(username, password) VALUES('" + username + "', '" + password + "');"
                         print(query)
                         cursor.execute(query)
                         print("Account creation successful")
                         return [True, username]
 
     except sqlite3.Error as error:
-        print("Error: " + str(error))
+        print("Error in Users.create_account(): " + str(error))
 
     finally:
         if sqlite_connection:
@@ -54,8 +56,8 @@ def login():
     try:
         sqlite_connection = sqlite3.connect("sql.db")
         cursor = sqlite_connection.cursor()
-        query = ""
-        cursor.execute(query)
+        enable_foreign_keys = "PRAGMA foreign_keys = ON;"
+        cursor.execute(enable_foreign_keys)
 
         incorrect_username = True
         incorrect_password = None
@@ -65,7 +67,7 @@ def login():
                 return [False, False]
 
             else:
-                query = "SELECT * FROM Users WHERE Username='" + username + "'"
+                query = "SELECT * FROM Users WHERE Username='" + username + "';"
                 cursor.execute(query)
                 result = cursor.fetchall()
                 if result:
@@ -90,7 +92,7 @@ def login():
                     print("User doesn't exist, please try again")
 
     except sqlite3.Error as error:
-        print("Error: " + str(error))
+        print("Error in Users.login(): " + str(error))
 
     finally:
         if sqlite_connection:
@@ -101,7 +103,9 @@ def get_user(username):
     try:
         sqlite_connection = sqlite3.connect("sql.db")
         cursor = sqlite_connection.cursor()
-        query = "SELECT * FROM Users WHERE Username='" + username + "'"
+        enable_foreign_keys = "PRAGMA foreign_keys = ON;"
+        query = "SELECT * FROM Users WHERE Username='" + username + "';"
+        cursor.execute(enable_foreign_keys)
         cursor.execute(query)
         result = cursor.fetchall()
         if result:
@@ -110,7 +114,7 @@ def get_user(username):
             print("No such user")
 
     except sqlite3.Error as error:
-        print("Error: " + str(error))
+        print("Error in Users.get_user(): " + str(error))
 
     finally:
         if sqlite_connection:
@@ -121,7 +125,9 @@ def get_all_users():
     try:
         sqlite_connection = sqlite3.connect("sql.db")
         cursor = sqlite_connection.cursor()
-        query = "SELECT * FROM Users"
+        enable_foreign_keys = "PRAGMA foreign_keys = ON;"
+        query = "SELECT * FROM Users;"
+        cursor.execute(enable_foreign_keys)
         cursor.execute(query)
         result = cursor.fetchall()
         if result:
@@ -130,7 +136,7 @@ def get_all_users():
             print("No users")
 
     except sqlite3.Error as error:
-        print("Error: " + str(error))
+        print("Error in Users.get_all_users(): " + str(error))
 
     finally:
         if sqlite_connection:

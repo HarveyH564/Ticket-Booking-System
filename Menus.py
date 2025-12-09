@@ -1,4 +1,4 @@
-import User
+import Users
 import Events
 import Tickets
 
@@ -13,11 +13,11 @@ def initial_menu():
     while True:
         user_input = input("Select an option: Create an account [C], Login to an account [L]: ")
         if user_input == "C":
-            attempt = User.create_account()
+            attempt = Users.create_account()
             if attempt[0] is True:
                 return [True, attempt[1]]
         elif user_input == "L":
-            attempt = User.login()
+            attempt = Users.login()
             if attempt[0] is True:
                 return [True, attempt[1]]
         elif user_input == "<-":
@@ -83,22 +83,10 @@ def user_menu(username):
                     print("Please enter a valid number!")
 
         elif choice == "2":  # update details
-            User.update_user_details(username)
+            Users.update_user_details(username)
             username = username  # session username already updated inside function
 
         elif choice == "<-":
             print("Use option 1 to view events")
         else:
             print("Invalid option! Please select 1 or 2.")
-
-
-def logged_in_menu():
-    user_input = input("Select an option: View all events [V], View upcoming available events [U] ")
-    if user_input == "V":
-        print(Events.get_all_events())
-    elif user_input == "U":
-        print(Events.get_available_events())
-    elif user_input == "<-":
-        print("Use option 1 to view events")
-    else:
-        print("Invalid option! Please select 1 to view events.")
