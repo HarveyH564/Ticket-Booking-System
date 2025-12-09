@@ -1,16 +1,47 @@
 import json
 import os
 import datetime
+import sqlite3
+
+def add_event(event_name, venue_id, start_date, end_date, description):
+    # TO DO
+    sqlite_connection = None
+    try:
+        sqlite_connection = sqlite3.connect("sql.db")
+        cursor = sqlite_connection.cursor()
+        query = "INSERT INTO Events(event_name, venue_id, start_date, end_date, description) VALUES ('" + event_name +"', '" + str(venue_id) + "', '" + start_date + "', '" + end_date + "', '" + description + "')"
+        cursor.execute(query)
+        print("Event created")
+
+    except sqlite3.Error as error:
+        print("Error: " + str(error))
+
+    finally:
+        if sqlite_connection:
+            sqlite_connection.commit()
+            sqlite_connection.close()
 
 def get_all_events():
-    # TO DO
-    if not os.path.isdir("events"):
-        return "No events exist please create one"
-    else:
-        event_list = []
-        for file in os.listdir("events"):
-            event_list.append((os.path.basename(file).removesuffix(".json")))
-        return event_list
+    sqlite_connection = None
+    try:
+        sqlite_connection = sqlite3.connect("sql.db")
+        cursor = sqlite_connection.cursor()
+        query = "SELECT * FROM EVENTS"
+        cursor.execute(query)
+        result = cursor.fetchall()
+        if result:
+            print(type(result))
+            return result
+        else:
+            return "No events exist please create one"
+
+
+    except sqlite3.Error as error:
+        print("Error: " + str(error))
+
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
 
 def get_available_events():
     if not os.path.isdir("events"):

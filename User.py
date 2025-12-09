@@ -78,23 +78,6 @@ def login():
                 else:
                     print("User doesn't exist, please try again")
 
-
-                while incorrect_password:
-                    password_attempt = input("Enter password: ")
-                    if password_attempt == "<-":
-                        user_file.close()
-                        print()
-                        incorrect_password = True
-                        return [False, False]
-                    elif password_attempt == user_password:
-                        user_file.close()
-                        incorrect_password = True
-                        print("Login successful")
-                        return [True, username]
-                    else:
-                        print("Incorrect password, please try again")
-
-
     except sqlite3.Error as error:
         print("Error: " + str(error))
 

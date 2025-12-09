@@ -6,10 +6,6 @@ import Menus
 import Events
 import DatabaseFuncs as db
 
-def remove_all_tables():
-
-    return
-
 # testing with a events list can be changed later
 event1 = Events.Event()
 # Using direct attributes instead of setters to avoid AttributeError
