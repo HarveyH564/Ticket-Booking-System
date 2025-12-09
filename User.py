@@ -116,6 +116,26 @@ def get_user(username):
         if sqlite_connection:
             sqlite_connection.close()
 
+def get_all_users():
+    sqlite_connection = None
+    try:
+        sqlite_connection = sqlite3.connect("sql.db")
+        cursor = sqlite_connection.cursor()
+        query = "SELECT * FROM Users"
+        cursor.execute(query)
+        result = cursor.fetchall()
+        if result:
+            return result
+        else:
+            print("No users")
+
+    except sqlite3.Error as error:
+        print("Error: " + str(error))
+
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+
 
 class User():
     def __init__(self):
