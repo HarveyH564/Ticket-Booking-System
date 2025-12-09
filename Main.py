@@ -16,9 +16,9 @@ def main():
     #    user_menu(logged_in[1])
 
 
-#if __name__ == "__main__":
-#    main()
-print("All Venues: ", Venues.get_all_venues())
-print("Venue 1 Seats: ", Venues.get_seats_for_venue(1))
-print("All Events: ", Events.get_all_events())
-print("Event 1 Tickets: ", Events.get_tickets_for_event(1))
+if __name__ == "__main__":
+    main()
+#("All Venues: ", Venues.get_all_venues())
+#print("Venue 1 Seats: ", Venues.get_seats_for_venue(1))
+#print("All Events: ", Events.get_all_events())
+#print("Event 1 Tickets: ", Events.get_tickets_for_event(1))
