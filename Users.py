@@ -38,7 +38,6 @@ def create_account():
                         return [False, False]
                     else:
                         query = "INSERT INTO Users(username, password) VALUES('" + username + "', '" + password + "');"
-                        print(query)
                         cursor.execute(query)
                         print("Account creation successful")
                         return [True, username]

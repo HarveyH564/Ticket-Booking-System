@@ -68,7 +68,7 @@ def delete_venue(id):
             sqlite_connection.commit()
             sqlite_connection.close()
 
-def get_seats(venue_id):
+def get_seats_for_venue(venue_id):
     sqlite_connection = None
     try:
         sqlite_connection = sqlite3.connect("sql.db")
@@ -78,7 +78,10 @@ def get_seats(venue_id):
         cursor.execute(enable_foreign_keys)
         cursor.execute(query)
         result = cursor.fetchall()
-        return result
+        if result:
+            return result
+        else:
+            return "No venues exist please create one"
 
     except sqlite3.Error as error:
         print("Error in Venues.get_seats(): " + str(error))
@@ -113,6 +116,3 @@ class Venue():
 
     def __str__(self):
         return self.location
-
-print(get_all_venues())
-print(get_seats(8))

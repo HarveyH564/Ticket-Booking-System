@@ -232,7 +232,6 @@ def get_all_events():
         cursor.execute(query)
         result = cursor.fetchall()
         if result:
-            print(type(result))
             return result
         else:
             return "No events exist please create one"
@@ -240,6 +239,30 @@ def get_all_events():
 
     except sqlite3.Error as error:
         print("Error in Events.get_all_events(): " + str(error))
+
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+
+def get_tickets_for_event(event_id):
+    sqlite_connection = None
+    try:
+        sqlite_connection = sqlite3.connect("sql.db")
+        cursor = sqlite_connection.cursor()
+        # sqlite doesn't have foreign keys enabled by default must do this every connection
+        enable_foreign_keys = "PRAGMA foreign_keys = ON;"
+        query = "SELECT * FROM Tickets WHERE event_id = " + str(event_id) + ";"
+        cursor.execute(enable_foreign_keys)
+        cursor.execute(query)
+        result = cursor.fetchall()
+        if result:
+            return result
+        else:
+            return "No tickets exist for this event please create some"
+
+
+    except sqlite3.Error as error:
+        print("Error: " + str(error))
 
     finally:
         if sqlite_connection:
