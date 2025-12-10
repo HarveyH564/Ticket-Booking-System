@@ -31,14 +31,43 @@ def logged_in_menu():
         print(Events.get_available_events())
     return
 
+def view_all_events_menu(event_list, username):
+    print("\n")
+    event_index = 0
+    for event in event_list:
+        print(str(event_index + 1) + ". Event name: " + event[1])
+        print("\tStart date: " + event[3])
+        print("\tDescription: " + event[5] + "\n")
+        event_index += 1
+
+    at_events_menu = True
+    while at_events_menu:
+        user_input = input("Select an event or go back [1, 2, ..., <-]: ")
+        try:
+            if user_input == "<-":
+                at_events_menu = True
+                user_menu(username)
+            elif int(user_input) <= event_index:
+                # get event
+                event = event_list[int(user_input) - 1]
+                print(event[1])
+            else:
+                print("No event of index", user_input)
+        except:
+            print("Invalid input")
+
+
+
 def user_menu(username):
     # Menu for logged-in users
-    while True:
+    at_user_menu = True
+    while at_user_menu:
         print(f"\n=== Welcome to the Ticket System, {username}! ===")
         print("1. View Available Events")
         print("2. Update User Details")  # <-- Added option
+        print("3. View All Events")
 
-        choice = input("Select an option (1-2): ")
+        choice = input("Select an option (1-3): ")
 
         if choice == "1":
             Events.show_available_events()
@@ -86,7 +115,15 @@ def user_menu(username):
             Users.update_user_details(username)
             username = username  # session username already updated inside function
 
+        elif choice == "3":
+            all_events = Events.get_all_events()
+            if all_events == "No events exist please create one":
+                print("No events\n")
+            else:
+                at_user_menu = False
+                view_all_events_menu(all_events, username)
+
         elif choice == "<-":
-            print("Use option 1 to view events")
+            print("Cannot go back from main menu")
         else:
             print("Invalid option! Please select 1 or 2.")
