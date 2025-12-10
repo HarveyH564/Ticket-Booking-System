@@ -141,6 +141,75 @@ def get_all_users():
         if sqlite_connection:
             sqlite_connection.close()
 
+def add_to_cart(username, event_id):
+    sqlite_connection = None
+    try:
+        sqlite_connection = sqlite3.connect("sql.db")
+        cursor = sqlite_connection.cursor()
+        # sqlite doesn't have foreign keys enabled by default must do this every connection
+        enable_foreign_keys = "PRAGMA foreign_keys = ON;"
+        get_user_id_query = "SELECT user_id FROM Users WHERE username = '" + username + "';"
+        cursor.execute(enable_foreign_keys)
+        cursor.execute(get_user_id_query)
+        user_id = cursor.fetchone()[0]
+        print("User id: " + str(user_id))
+        add_to_cart_query = "INSERT INTO Cart(user_id, event_id) VALUES (" + str(user_id) + ", " + str(event_id) + ");"
+        cursor.execute(add_to_cart_query)
+
+    except sqlite3.Error as error:
+        if str(error) == "UNIQUE constraint failed: Cart.user_id, Cart.event_id":
+            print("Event already added to basket")
+        else:
+            print("Error in Users.add_to_cart(): " + str(error))
+
+    finally:
+        if sqlite_connection:
+            sqlite_connection.commit()
+            sqlite_connection.close()
+
+def get_users_cart(user_id):
+    sqlite_connection = None
+    try:
+        sqlite_connection = sqlite3.connect("sql.db")
+        cursor = sqlite_connection.cursor()
+        # sqlite doesn't have foreign keys enabled by default must do this every connection
+        enable_foreign_keys = "PRAGMA foreign_keys = ON;"
+        get_user_cart_query = "SELECT * FROM Cart WHERE user_id = " + str(user_id) + ";"
+        cursor.execute(enable_foreign_keys)
+        cursor.execute(get_user_cart_query)
+        user_cart = cursor.fetchall()
+        return user_cart
+
+    except sqlite3.Error as error:
+        print("Error in Users.get_users_cart(): " + str(error))
+
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+
+def remove_event_from_cart(username, event_id):
+    sqlite_connection = None
+    try:
+        sqlite_connection = sqlite3.connect("sql.db")
+        cursor = sqlite_connection.cursor()
+        # sqlite doesn't have foreign keys enabled by default must do this every connection
+        enable_foreign_keys = "PRAGMA foreign_keys = ON;"
+        get_user_id_query = "SELECT user_id FROM Users WHERE username = '" + username + "';"
+        cursor.execute(enable_foreign_keys)
+        cursor.execute(get_user_id_query)
+        user_id = cursor.fetchone()[0]
+        remove_event_query = "DELETE FROM Cart WHERE user_id = " + str(user_id) + " AND event_id = " + str(event_id) + ";"
+        cursor.execute(remove_event_query)
+        result = cursor.fetchall()
+
+    except sqlite3.Error as error:
+        print("Error in Users.remove_event_from_cart(): " + str(error))
+
+    finally:
+        if sqlite_connection:
+            sqlite_connection.commit()
+            sqlite_connection.close()
+
 
 class User():
     def __init__(self):
@@ -279,3 +348,8 @@ def update_user_details(username):
         json.dump(user_data, file)
 
     print("User details updated successfully!\n")
+
+print(get_all_users())
+#add_to_cart("Bob", 1)
+remove_event_from_cart("Bob", 5)
+print(get_users_cart(1))
