@@ -74,6 +74,16 @@ CREATE TABLE IF NOT EXISTS Tickets (
     FOREIGN KEY (user_id) REFERENCES Users(user_id)
 );"""
 
+cart_table_creation_query = """
+CREATE TABLE IF NOT EXISTS Cart (
+    cart_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL,
+    event_id INTEGER NOT NULL,
+    UNIQUE (user_id, event_id),
+    FOREIGN KEY (user_id) REFERENCES Users(user_id),
+    FOREIGN KEY (event_id) REFERENCES Events(event_id)
+);"""
+
 # Populate venues table with 2 sample venues and the seats table for a sample list for each event
 def init_populate_venues(cursor):
     insert_venues_query_1 = "INSERT INTO Venues(venue_name, location) VALUES ('O2 academy', 'Leicester');"
@@ -158,6 +168,7 @@ def initialise_db():
         cursor.execute(events_table_creation_query)
         cursor.execute(users_table_creation_query)
         cursor.execute(tickets_table_creation_query)
+        cursor.execute(cart_table_creation_query)
 
         # If there's no venues add 2
         get_venues_query = "SELECT * FROM Venues;"
@@ -231,7 +242,7 @@ def delete_all_tables():
         get_all_tables_query = "SELECT name FROM sqlite_master WHERE type='table';"
         cursor.execute(enable_foreign_keys)
         cursor.execute(get_all_tables_query)
-        tables = ['Tickets', 'Users', 'Events', 'Seats', 'Venues']
+        tables = ['Cart', 'Tickets', 'Users', 'Events', 'Seats', 'Venues']
 
         for table in tables:
             drop_query = "DROP TABLE IF EXISTS " + table + ";"
