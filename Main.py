@@ -1,8 +1,5 @@
-import Events
 import Menus
 import DatabaseFuncs as db
-import Venues
-
 
 def main():
     db.initialise_db()
