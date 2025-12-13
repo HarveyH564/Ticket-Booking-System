@@ -31,7 +31,7 @@ def logged_in_menu():
         print(Events.get_available_events())
     return
 
-def view_all_events_menu(event_list, username):
+def view_all_events_menu(event_list, user_id):
     print("\n")
     event_index = 0
     for event in event_list:
@@ -46,7 +46,7 @@ def view_all_events_menu(event_list, username):
         try:
             if user_input == "<-":
                 at_events_menu = True
-                user_menu(username)
+                user_menu(user_id)
             elif int(user_input) <= event_index:
                 # get event
                 event = event_list[int(user_input) - 1]
@@ -58,11 +58,11 @@ def view_all_events_menu(event_list, username):
 
 
 
-def user_menu(username):
+def user_menu(user_id):
     # Menu for logged-in users
     at_user_menu = True
     while at_user_menu:
-        print(f"\n=== Welcome to the Ticket System, {username}! ===")
+        #print(f"\n=== Welcome to the Ticket System, {username}! ===")
         print("1. View Available Events")
         print("2. Update User Details")  # <-- Added option
         print("3. View All Events")
@@ -121,7 +121,7 @@ def user_menu(username):
                 print("No events\n")
             else:
                 at_user_menu = False
-                view_all_events_menu(all_events, username)
+                view_all_events_menu(all_events, user_id)
 
         elif choice == "<-":
             print("Cannot go back from main menu")

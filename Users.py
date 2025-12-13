@@ -2,17 +2,8 @@ import json
 import os
 import sqlite3
 
-def create_user():
-    return
 
-
-def delete_user():
-    return
-
-
-def update_user():
-    return
-
+# returns [x,y] if account created x = True, y = userID. else x = False, y = False
 def create_account():
     sqlite_connection = None
     try:
@@ -27,8 +18,8 @@ def create_account():
                 print()
                 return [False, False]
             else:
-                query = "SELECT * FROM Users WHERE Username='" + username + "';"
-                cursor.execute(query)
+                get_user_query = "SELECT * FROM Users WHERE Username='" + username + "';"
+                cursor.execute(get_user_query)
                 result = cursor.fetchone()
                 if result:
                     print("User already exists")
@@ -37,10 +28,13 @@ def create_account():
                     if password == "<-":
                         return [False, False]
                     else:
-                        query = "INSERT INTO Users(username, password) VALUES('" + username + "', '" + password + "');"
-                        cursor.execute(query)
+                        add_user_query = "INSERT INTO Users(username, password) VALUES('" + username + "', '" + password + "');"
+                        cursor.execute(add_user_query)
+                        user_id_query = "SELECT user_id FROM Users WHERE username = '" + username + "';"
+                        cursor.execute(user_id_query)
+                        user_id = cursor.fetchone()[0]
                         print("Account creation successful")
-                        return [True, username]
+                        return [True, user_id]
 
     except sqlite3.Error as error:
         print("Error in Users.create_account(): " + str(error))
@@ -49,6 +43,7 @@ def create_account():
         if sqlite_connection:
             sqlite_connection.commit()
             sqlite_connection.close()
+
 
 def login():
     sqlite_connection = None
@@ -66,8 +61,8 @@ def login():
                 return [False, False]
 
             else:
-                query = "SELECT * FROM Users WHERE Username='" + username + "';"
-                cursor.execute(query)
+                get_user_query = "SELECT * FROM Users WHERE Username='" + username + "';"
+                cursor.execute(get_user_query)
                 result = cursor.fetchall()
                 if result:
                     # break loop
@@ -81,8 +76,11 @@ def login():
                             return [False, False]
                         elif password_attempt == result[0][2]:
                             incorrect_password = False
+                            user_id_query = "SELECT user_id FROM Users WHERE username = '" + username + "';"
+                            cursor.execute(user_id_query)
+                            user_id = cursor.fetchone()[0]
                             print("Login successful")
-                            return [True, username]
+                            return [True, user_id]
                         else:
                             print("Incorrect password, please try again")
 
@@ -97,6 +95,7 @@ def login():
         if sqlite_connection:
             sqlite_connection.close()
 
+# Func for testing
 def get_user(username):
     sqlite_connection = None
     try:
@@ -119,6 +118,7 @@ def get_user(username):
         if sqlite_connection:
             sqlite_connection.close()
 
+# Func for testing
 def get_all_users():
     sqlite_connection = None
     try:
@@ -349,7 +349,7 @@ def update_user_details(username):
 
     print("User details updated successfully!\n")
 
-print(get_all_users())
+#print(get_all_users())
 #add_to_cart("Bob", 1)
-remove_event_from_cart("Bob", 5)
-print(get_users_cart(1))
+#remove_event_from_cart("Bob", 5)
+#print(get_users_cart(1))
