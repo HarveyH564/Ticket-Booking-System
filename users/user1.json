@@ -1,1 +1,1 @@
-{"username": "user1", "password": "1234", "tickets": {"Rock concert - General Admission": 1}, "cart": {}}
+{"username": "user1", "password": "1234", "tickets": {"Rock concert - General Admission": 1}, "cart": {}, "ticket_records": [{"reference": "REF-user1-1764268852-6268", "ticket": "Rock concert - Meet Greet", "quantity": 2}]}

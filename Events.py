@@ -1,5 +1,8 @@
 import json
 import os
+import datetime
+import sqlite3
+
 
 class Event():
     def __init__(self):
@@ -46,7 +49,7 @@ class Event():
 
     def get_description(self):
         return self.description
-    
+
     def __str__(self):
         return f"Venue: {self.venue}, Start: {self.start_date}, End: {self.end_date}, Desc: {self.description}"
 
@@ -70,3 +73,221 @@ class Event():
                 event_file.write(json_input)
                 event_file.close()
                 print("Event saved successfully")
+
+# testing with a events list can be changed later
+event1 = Event()
+# Using direct attributes instead of setters to avoid AttributeError
+event1.venue = "Club21"
+event1.start_date = "12-12-2012"
+event1.end_date = "13-12-2012"
+event1.description = "Student night"
+event1.tickets = 20
+
+events = [event1]
+
+def find_popular_events():
+    print("\n=== Popular Upcoming Events===")
+
+    if len(events) == 0:
+        print("no event available")
+        return
+
+    popular_events = sorted(events, key=lambda event: event.tickets)
+
+    for event in popular_events[:5]:
+        print(event)
+
+    # TO DO
+    return
+
+
+def filter_events_by_date():
+    return
+
+
+def filter_events_by_tickets_left():
+    return
+
+
+def filter_events_by_genre():
+    return
+
+def get_events_admin():
+    return
+
+
+def update_event():
+    return
+
+
+def delete_event():
+    return
+
+def show_available_events():
+    print("\n=== Available Events ===")
+    print("1. Rock concert")
+    print("2. Pop concert")
+    print("3. International band performance")
+    print("4. Local band performance")
+    print("=========================\n")
+
+
+def show_event_tickets(event_choice, filter_type=None, sort_type=None):
+    events = {
+        "1": {
+            "name": "Rock concert",
+            "tickets": {
+                "general": {"price": 25, "description": "General Admission"},
+                "vip": {"price": 60, "description": "VIP Access + Lounge"},
+                "meet_greet": {"price": 120, "description": "Meet & Greet Pass"}
+            }
+        },
+        "2": {
+            "name": "Pop concert",
+            "tickets": {
+                "general": {"price": 35, "description": "General Admission"},
+                "vip": {"price": 75, "description": "VIP Front Row"},
+                "meet_greet": {"price": 150, "description": "Meet & Greet Pass"}
+            }
+        },
+        "3": {
+            "name": "International band performance",
+            "tickets": {
+                "general": {"price": 30, "description": "General Admission"},
+                "vip": {"price": 80, "description": "VIP Premium Seating"},
+                "meet_greet": {"price": 200, "description": "Meet & Greet Backstage"}
+            }
+        },
+        "4": {
+            "name": "Local band performance",
+            "tickets": {
+                "general": {"price": 20, "description": "General Admission"},
+                "vip": {"price": 45, "description": "VIP Backstage Pass"},
+                "meet_greet": {"price": 90, "description": "Meet & Greet Pass"}
+            }
+        }
+    }
+
+    if event_choice not in events:
+        print("Invalid event choice!")
+        return None, None
+
+    event = events[event_choice]
+    tickets = event["tickets"]
+
+    if filter_type in ["vip", "general", "meet_greet"]:
+        tickets = {filter_type: tickets[filter_type]}
+    elif filter_type == "price_under_50":
+        tickets = {k: v for k, v in tickets.items() if v["price"] < 50}
+    elif filter_type == "price_over_50":
+        tickets = {k: v for k, v in tickets.items() if v["price"] >= 50}
+
+    if sort_type == "price_low_high":
+        sorted_tickets = sorted(tickets.items(), key=lambda x: x[1]["price"])
+    elif sort_type == "price_high_low":
+        sorted_tickets = sorted(tickets.items(), key=lambda x: x[1]["price"], reverse=True)
+    else:
+        sorted_tickets = sorted(tickets.items())
+
+    print(f"\n=== {event['name']} Ticket Options ===")
+    option_map = {}
+    count = 1
+    for key, info in sorted_tickets:
+        print(f"{count}. {key.title().replace('_', ' ')} - ${info['price']}")
+        print(f"   {info['description']}")
+        option_map[str(count)] = key
+        count += 1
+    print("===============================\n")
+    return event, option_map
+
+
+def add_event(event_name, venue_id, start_date, end_date, description):
+    # TO DO
+    sqlite_connection = None
+    try:
+        sqlite_connection = sqlite3.connect("sql.db")
+        cursor = sqlite_connection.cursor()
+        enable_foreign_keys = "PRAGMA foreign_keys = ON;"
+        query = "INSERT INTO Events(event_name, venue_id, start_date, end_date, description) VALUES ('" + event_name +"', '" + str(venue_id) + "', '" + start_date + "', '" + end_date + "', '" + description + "');"
+        cursor.execute(enable_foreign_keys)
+        cursor.execute(query)
+        print("Event created")
+
+    except sqlite3.Error as error:
+        print("Error in Events.add_event(): " + str(error))
+
+    finally:
+        if sqlite_connection:
+            sqlite_connection.commit()
+            sqlite_connection.close()
+
+def get_all_events():
+    sqlite_connection = None
+    try:
+        sqlite_connection = sqlite3.connect("sql.db")
+        cursor = sqlite_connection.cursor()
+        enable_foreign_keys = "PRAGMA foreign_keys = ON;"
+        query = "SELECT * FROM EVENTS;"
+        cursor.execute(enable_foreign_keys)
+        cursor.execute(query)
+        result = cursor.fetchall()
+        if result:
+            return result
+        else:
+            return "No events exist please create one"
+
+
+    except sqlite3.Error as error:
+        print("Error in Events.get_all_events(): " + str(error))
+
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+
+def get_tickets_for_event(event_id):
+    sqlite_connection = None
+    try:
+        sqlite_connection = sqlite3.connect("sql.db")
+        cursor = sqlite_connection.cursor()
+        # sqlite doesn't have foreign keys enabled by default must do this every connection
+        enable_foreign_keys = "PRAGMA foreign_keys = ON;"
+        query = "SELECT * FROM Tickets WHERE event_id = " + str(event_id) + ";"
+        cursor.execute(enable_foreign_keys)
+        cursor.execute(query)
+        result = cursor.fetchall()
+        if result:
+            return result
+        else:
+            return "No tickets exist for this event please create some"
+
+
+    except sqlite3.Error as error:
+        print("Error: " + str(error))
+
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+
+def get_available_events():
+    if not os.path.isdir("events"):
+        # TO CHANGE user cant make events
+        return ["No events exist please create one"]
+    else:
+        event_list = []
+        for file in os.listdir("events"):
+            f = open("events/" + file, "r")
+            file_info = json.loads(f.read())
+            if datetime.datetime.strptime(file_info["Start date"], "%d-%m-%Y").date() >= datetime.date.today() and file_info["Tickets"] != None:
+                event_list.append(file_info["Event name"])
+            f.close()
+        # if there are events but none upcoming
+        return event_list
+
+def show_available_events():
+    # Available events
+    print("\n=== Available Events ===")
+    print("1. Rock concert")
+    print("2. Pop concert")
+    print("3. International band performance")
+    print("4. Local band performance")
+    print("=========================\n")
