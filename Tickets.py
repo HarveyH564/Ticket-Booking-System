@@ -3,6 +3,7 @@ import json
 import time
 import random
 import Events
+from datetime import datetime
 
 class Ticket():
     def __init__(self):
@@ -125,23 +126,31 @@ def purchase_ticket(username, event_choice, ticket_type, quantity):
     events = {
         "1": {
             "name": "Rock concert",
+            "date": "30-12-2025",
             "general": 25,
-            "vip": 60
+            "vip": 60,
+            "meet_greet": 120
         },
         "2": {
             "name": "Pop concert",
             "general": 35,
-            "vip": 75
+            "date": "05-01-2026",
+            "vip": 75,
+            "meet_greet": 150
         },
         "3": {
             "name": "International band performance",
             "general": 30,
-            "vip": 80
+            "date": "20-01-2026",
+            "vip": 80,
+            "meet_greet": 200
         },
         "4": {
             "name": "Local band performance",
             "general": 20,
-            "vip": 45
+            "date": "30-02-2026",
+            "vip": 45,
+            "meet_greet": 90
         }
     }
 
@@ -178,9 +187,13 @@ def purchase_ticket(username, event_choice, ticket_type, quantity):
         if "ticket_records" not in userData:
             userData["ticket_records"] = []
 
-        userData["ticket_records"].append(
-            {"reference": reference, "ticket": ticket_name, "quantity": quantity}
-        )
+        userData["ticket_records"].append({
+            "reference": reference,
+            "ticket": ticket_name,
+            "quantity": quantity,
+            "event_date": event["date"],
+            "purchase_date": datetime.now().strftime("%d-%m-%Y")
+        })
 
         with open(f"users/{username}.json", "w") as file:
             json.dump(userData, file)

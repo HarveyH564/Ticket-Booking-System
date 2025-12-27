@@ -136,6 +136,7 @@ def show_event_tickets(event_choice, filter_type=None, sort_type=None):
     events = {
         "1": {
             "name": "Rock concert",
+            "date": "30-12-2025",
             "tickets": {
                 "general": {"price": 25, "description": "General Admission"},
                 "vip": {"price": 60, "description": "VIP Access + Lounge"},
@@ -144,6 +145,7 @@ def show_event_tickets(event_choice, filter_type=None, sort_type=None):
         },
         "2": {
             "name": "Pop concert",
+            "date": "05-01-2026",
             "tickets": {
                 "general": {"price": 35, "description": "General Admission"},
                 "vip": {"price": 75, "description": "VIP Front Row"},
@@ -152,6 +154,7 @@ def show_event_tickets(event_choice, filter_type=None, sort_type=None):
         },
         "3": {
             "name": "International band performance",
+            "date": "20-01-2026",
             "tickets": {
                 "general": {"price": 30, "description": "General Admission"},
                 "vip": {"price": 80, "description": "VIP Premium Seating"},
@@ -160,6 +163,7 @@ def show_event_tickets(event_choice, filter_type=None, sort_type=None):
         },
         "4": {
             "name": "Local band performance",
+            "date": "30-02-2026",
             "tickets": {
                 "general": {"price": 20, "description": "General Admission"},
                 "vip": {"price": 45, "description": "VIP Backstage Pass"},
