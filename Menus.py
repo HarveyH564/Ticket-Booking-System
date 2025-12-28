@@ -35,6 +35,15 @@ def logged_in_menu():
     elif user_input == "U":
         print(Events.get_available_events())
     return
+def show_seat_map():
+    print("\n=== Seat Map (O = available, X = occupied) ===")
+    print("    1  2  3  4  5")
+    print("A | O  O  X  O  O")
+    print("B | O  X  O  O  O")
+    print("C | O  O  O  X  O")
+    print("D | O  O  O  O  O")
+    print("E | O  O  O  O  X")
+    print("============================================\n")
 
 
 def view_all_events_menu(event_list, user_id):
@@ -128,11 +137,12 @@ def user_menu(user_id):
     while at_user_menu:
         print(f"\n=== Welcome to the Ticket System, {username}! ===")
         print("1. View Available Events")
-        print("2. Update User Details")
+        print("2. View Popular Upcoming Events")
         print("3. View All Events")
-        print("4. Logout")
+        print("4. Update User Details")
+        print("5. Logout")
 
-        choice = input("Select an option (1-4): ")
+        choice = input("Select an option (1-5): ")
 
         if choice == "1":
             Events.show_available_events()
@@ -149,7 +159,13 @@ def user_menu(user_id):
             if event:
                 print("1. Buy Ticket")
                 print("2. Filter / Sort Tickets")
+                print("3. View Seating Map")
                 action = input("Select: ")
+
+                if action == "3":
+                    show_seat_map()
+                elif action == "<-":
+                    break
 
                 if action == "2":
                     event, ticket_options, current_filter, current_sort = Tickets.apply_filters_and_sorting(
@@ -173,15 +189,18 @@ def user_menu(user_id):
                 try:
                     quantity = int(input("Enter quantity: "))
                     if quantity > 0:
-                        Tickets.purchase_ticket(username, event_choice, ticket_type,
-                                                quantity)
+                        Tickets.purchase_ticket(username, event_choice, ticket_type, quantity)
                     else:
                         print("Quantity must be at least 1!")
                 except ValueError:
                     print("Please enter a valid number!")
 
+
         elif choice == "2":
-            Users.update_user_details(username)
+            print('\n=== Popular Upcoming Events====')
+            print("1.Rock concert")
+            print("2.Christmas Party")
+
 
         elif choice == "3":
             all_events = Events.get_all_events()
@@ -192,6 +211,9 @@ def user_menu(user_id):
                 view_all_events_menu(all_events, user_id)
 
         elif choice == "4":
+            Users.update_user_details(username)
+
+        elif choice == "5":
             print("Logging out...")
             at_user_menu = False
 

@@ -200,6 +200,13 @@ def purchase_ticket(username, event_choice, ticket_type, quantity):
 
         print("\nPurchase successful!")
         print(f"Your unique booking reference is: {reference}\n")
+
+        print("1. Download Ticket")
+        print("2. Back to menu")
+        post = input("select")
+        if post == "1":
+            print("Ticket successfully downloaded!")
+
         return True
     else:
         print("Purchase cancelled.")
