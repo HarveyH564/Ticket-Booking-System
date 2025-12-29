@@ -140,9 +140,10 @@ def user_menu(user_id):
         print("2. View Popular Upcoming Events")
         print("3. View All Events")
         print("4. Update User Details")
-        print("5. Logout")
+        print("5. View previous purchases")
+        print("6. Logout")
 
-        choice = input("Select an option (1-5): ")
+        choice = input("Select an option (1-6): ")
 
         if choice == "1":
             Events.show_available_events()
@@ -213,11 +214,16 @@ def user_menu(user_id):
         elif choice == "4":
             Users.update_user_details(username)
 
+
+
         elif choice == "5":
+            Tickets.view_previous_purchases(username)
+
+        elif choice == "6":
             print("Logging out...")
             at_user_menu = False
 
         elif choice == "<-":
             print("Cannot go back from main menu")
         else:
-            print("Invalid option! Please select 1-4.")
+            print("Invalid option! Please select 1-6.")

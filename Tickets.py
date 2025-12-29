@@ -212,6 +212,28 @@ def purchase_ticket(username, event_choice, ticket_type, quantity):
         print("Purchase cancelled.")
         return False
 
+def view_previous_purchases(username):
+    path = f"users/{username}.json"
+
+    if not os.path.exists(path):
+        print("no previous purchases found")
+        return
+
+    with open(path, "r") as file:
+        userData = json.load(file)
+
+    records = userData["ticket_records, []"]
+
+    if not records:
+        print("No previous purchases found")
+        return
+
+    print("\n === Your previous purchases ===")
+    for i, r in enumerate(records, start=1):
+        print(f"{i}. {r.get('ticket', 'Unknown event')}")
+        print(f"  Reference: {r.get('reference', 'NA')}")
+        print("")
+
 def add_ticket_to_cart(ticket, user):
     if not os.path.exists("users/" + user + ".json"):
         print("User doesn't exist, please try again")
