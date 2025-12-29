@@ -181,13 +181,17 @@ def purchase_ticket(username, event_choice, ticket_type, quantity):
     confirm = input("Confirm purchase? (Y/N): ").upper()
 
     if confirm == "Y":
-        with open(f"users/{username}.json", "r") as file:
+        os.makedirs("users", exist_ok=True)
+        path = f"users/{username}.json"
+
+        if not os.path.exists(path):
+            with open(path, "w") as f:
+                json.dump({"ticket_records": []}, f)
+
+        with open(path, "r") as file:
             userData = json.load(file)
 
-        if "ticket_records" not in userData:
-            userData["ticket_records"] = []
-
-        userData["ticket_records"].append({
+        userData.setdefault("ticket_records", []).append({
             "reference": reference,
             "ticket": ticket_name,
             "quantity": quantity,
@@ -195,17 +199,19 @@ def purchase_ticket(username, event_choice, ticket_type, quantity):
             "purchase_date": datetime.now().strftime("%d-%m-%Y")
         })
 
-        with open(f"users/{username}.json", "w") as file:
-            json.dump(userData, file)
+        with open(path, "w") as file:
+            json.dump(userData, file, indent=2)
 
         print("\nPurchase successful!")
         print(f"Your unique booking reference is: {reference}\n")
 
         print("1. Download Ticket")
         print("2. Back to menu")
-        post = input("select")
+        post = input("Select: ")
         if post == "1":
             print("Ticket successfully downloaded!")
+
+        return True
 
         return True
     else:
@@ -222,7 +228,7 @@ def view_previous_purchases(username):
     with open(path, "r") as file:
         userData = json.load(file)
 
-    records = userData["ticket_records, []"]
+    records = userData.get("ticket_records", [])
 
     if not records:
         print("No previous purchases found")
