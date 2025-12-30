@@ -205,72 +205,72 @@ def show_event_tickets(event_choice, filter_type=None, sort_type=None):
     return event, option_map
 
 
-def add_event(event_name, venue_id, start_date, end_date, description):
-    # TO DO
-    sqlite_connection = None
-    try:
-        sqlite_connection = sqlite3.connect("sql.db")
-        cursor = sqlite_connection.cursor()
-        enable_foreign_keys = "PRAGMA foreign_keys = ON;"
-        query = "INSERT INTO Events(event_name, venue_id, start_date, end_date, description) VALUES ('" + event_name +"', '" + str(venue_id) + "', '" + start_date + "', '" + end_date + "', '" + description + "');"
-        cursor.execute(enable_foreign_keys)
-        cursor.execute(query)
-        print("Event created")
-
-    except sqlite3.Error as error:
-        print("Error in Events.add_event(): " + str(error))
-
-    finally:
-        if sqlite_connection:
-            sqlite_connection.commit()
-            sqlite_connection.close()
-
-def get_all_events():
-    sqlite_connection = None
-    try:
-        sqlite_connection = sqlite3.connect("sql.db")
-        cursor = sqlite_connection.cursor()
-        enable_foreign_keys = "PRAGMA foreign_keys = ON;"
-        query = "SELECT * FROM EVENTS;"
-        cursor.execute(enable_foreign_keys)
-        cursor.execute(query)
-        result = cursor.fetchall()
-        if result:
-            return result
-        else:
-            return "No events exist please create one"
-
-
-    except sqlite3.Error as error:
-        print("Error in Events.get_all_events(): " + str(error))
-
-    finally:
-        if sqlite_connection:
-            sqlite_connection.close()
-
-def get_tickets_for_event(event_id):
-    sqlite_connection = None
-    try:
-        sqlite_connection = sqlite3.connect("sql.db")
-        cursor = sqlite_connection.cursor()
-        # sqlite doesn't have foreign keys enabled by default must do this every connection
-        enable_foreign_keys = "PRAGMA foreign_keys = ON;"
-        query = "SELECT * FROM Tickets WHERE event_id = " + str(event_id) + ";"
-        cursor.execute(enable_foreign_keys)
-        cursor.execute(query)
-        result = cursor.fetchall()
-        if result:
-            return result
-        else:
-            return "No tickets exist for this event please create some"
-
-
-    except sqlite3.Error as error:
-        print("Error: " + str(error))
-
-    finally:
-        if sqlite_connection:
-            sqlite_connection.close()
+# def add_event(event_name, venue_id, start_date, end_date, description):
+#     # TO DO
+#     sqlite_connection = None
+#     try:
+#         sqlite_connection = sqlite3.connect("sql.db")
+#         cursor = sqlite_connection.cursor()
+#         enable_foreign_keys = "PRAGMA foreign_keys = ON;"
+#         query = "INSERT INTO Events(event_name, venue_id, start_date, end_date, description) VALUES ('" + event_name +"', '" + str(venue_id) + "', '" + start_date + "', '" + end_date + "', '" + description + "');"
+#         cursor.execute(enable_foreign_keys)
+#         cursor.execute(query)
+#         print("Event created")
+#
+#     except sqlite3.Error as error:
+#         print("Error in Events.add_event(): " + str(error))
+#
+#     finally:
+#         if sqlite_connection:
+#             sqlite_connection.commit()
+#             sqlite_connection.close()
+#
+# def get_all_events():
+#     sqlite_connection = None
+#     try:
+#         sqlite_connection = sqlite3.connect("sql.db")
+#         cursor = sqlite_connection.cursor()
+#         enable_foreign_keys = "PRAGMA foreign_keys = ON;"
+#         query = "SELECT * FROM EVENTS;"
+#         cursor.execute(enable_foreign_keys)
+#         cursor.execute(query)
+#         result = cursor.fetchall()
+#         if result:
+#             return result
+#         else:
+#             return "No events exist please create one"
+#
+#
+#     except sqlite3.Error as error:
+#         print("Error in Events.get_all_events(): " + str(error))
+#
+#     finally:
+#         if sqlite_connection:
+#             sqlite_connection.close()
+#
+# def get_tickets_for_event(event_id):
+#     sqlite_connection = None
+#     try:
+#         sqlite_connection = sqlite3.connect("sql.db")
+#         cursor = sqlite_connection.cursor()
+#         # sqlite doesn't have foreign keys enabled by default must do this every connection
+#         enable_foreign_keys = "PRAGMA foreign_keys = ON;"
+#         query = "SELECT * FROM Tickets WHERE event_id = " + str(event_id) + ";"
+#         cursor.execute(enable_foreign_keys)
+#         cursor.execute(query)
+#         result = cursor.fetchall()
+#         if result:
+#             return result
+#         else:
+#             return "No tickets exist for this event please create some"
+#
+#
+#     except sqlite3.Error as error:
+#         print("Error: " + str(error))
+#
+#     finally:
+#         if sqlite_connection:
+#             sqlite_connection.close()
 
 def get_available_events():
     if not os.path.isdir("events"):

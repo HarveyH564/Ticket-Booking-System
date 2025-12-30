@@ -219,28 +219,28 @@ def admin_menu():
             print("Invalid option!")
 
 
-def user_menu(user_id):
-    # Menu for logged in users
-
-    sqlite_connection = None
-    try:
-        import sqlite3
-        sqlite_connection = sqlite3.connect("sql.db")
-        cursor = sqlite_connection.cursor()
-        query = "SELECT username FROM Users WHERE user_id = " + str(user_id) + ";"
-        cursor.execute(query)
-        result = cursor.fetchone()
-        if result:
-            username = result[0]  # Now we have the username
-        else:
-            print("Error: Could not find username for user ID", user_id)
-            return
-    except Exception as error:
-        print("Error getting username: " + str(error))
-        return
-    finally:
-        if sqlite_connection:
-            sqlite_connection.close()
+# def user_menu(user_id):
+#     # Menu for logged in users
+#
+#     sqlite_connection = None
+#     try:
+#         import sqlite3
+#         sqlite_connection = sqlite3.connect("sql.db")
+#         cursor = sqlite_connection.cursor()
+#         query = "SELECT username FROM Users WHERE user_id = " + str(user_id) + ";"
+#         cursor.execute(query)
+#         result = cursor.fetchone()
+#         if result:
+#             username = result[0]  # Now we have the username
+#         else:
+#             print("Error: Could not find username for user ID", user_id)
+#             return
+#     except Exception as error:
+#         print("Error getting username: " + str(error))
+#         return
+#     finally:
+#         if sqlite_connection:
+#             sqlite_connection.close()
 
     # Check for reminders
     try:
