@@ -1,9 +1,7 @@
 import Menus
-import DatabaseFuncs as db
 
 
 def main():
-    db.initialise_db()
 
     print("=== Simple Ticket System ===")
 
@@ -17,7 +15,7 @@ def main():
 
         if choice == "1":
             logged_in = Menus.initial_menu()
-            if logged_in and logged_in[0]:
+            if logged_in[0]:
                 Menus.user_menu(logged_in[1])
 
         elif choice == "2":
@@ -39,4 +37,4 @@ if __name__ == "__main__":
 #("All Venues: ", Venues.get_all_venues())
 #print("Venue 1 Seats: ", Venues.get_seats_for_venue(1))
 #print("All Events: ", Events.get_all_events())
-#print("Event 1 Tickets: ", Events.get_ti  ckets_for_event(1))
+#print("Event 1 Tickets: ", Events.get_tickets_for_event(1))
