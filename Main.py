@@ -1,16 +1,37 @@
 import Menus
 import DatabaseFuncs as db
 
+
 def main():
     db.initialise_db()
 
     print("=== Simple Ticket System ===")
-    logged_in = [False, False]
-    while not logged_in[0]:
-        logged_in = Menus.initial_menu()
 
-    if logged_in[0]:
-        Menus.user_menu(logged_in[1])
+    while True:
+        print("\n=== MAIN MENU ===")
+        print("1. User Login / Create Account")
+        print("2. Admin Login")
+        print("3. Exit")
+
+        choice = input("Select an option (1-3): ")
+
+        if choice == "1":
+            logged_in = Menus.initial_menu()
+            if logged_in and logged_in[0]:
+                Menus.user_menu(logged_in[1])
+
+        elif choice == "2":
+            if Menus.admin_login():
+                Menus.admin_menu()
+            else:
+                print("Invalid admin credentials!")
+
+        elif choice == "3":
+            print("Goodbye!")
+            break
+
+        else:
+            print("Invalid option!")
 
 
 if __name__ == "__main__":
