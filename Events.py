@@ -85,6 +85,32 @@ event1.tickets = 20
 
 events = [event1]
 
+def create_event(event_name, venue_name, tickets, start_date, end_date, description):
+    if not os.path.isdir("events"):
+        os.mkdir("events")
+    else:
+        if os.path.exists("events/" + event_name.replace(" ", "_").lower()):
+            print("Event already exists, update or delete it")
+        else:
+            event_file = open("events/" + event_name.replace(" ", "_").lower() + ".json", "w")
+            event_info = {
+                "Event name": event_name,
+                "Venue": venue_name,
+                "Tickets": tickets,
+                "Start date": start_date,
+                "End date": end_date,
+                "Description": description
+            }
+            json_input = json.dumps(event_info)
+            event_file.write(json_input)
+            event_file.close()
+
+def update_event():
+    return
+
+def delete_event():
+    return
+
 def find_popular_events():
     print("\n=== Popular Upcoming Events===")
 
@@ -116,12 +142,7 @@ def get_events_admin():
     return
 
 
-def update_event():
-    return
 
-
-def delete_event():
-    return
 
 def show_available_events():
     print("\n=== Available Events ===")
@@ -271,6 +292,20 @@ def show_event_tickets(event_choice, filter_type=None, sort_type=None):
 #     finally:
 #         if sqlite_connection:
 #             sqlite_connection.close()
+
+def get_all_events():
+    # if there's no events
+    if not os.path.isdir("events"):
+        # TO CHANGE user cant make events
+        return ["No events exist please create one"]
+    else:
+        event_list = []
+        for file in os.listdir("events"):
+            f = open("events/" + file, "r")
+            file_info = json.loads(f.read())
+            event_list.append(file_info)
+            f.close()
+        return event_list
 
 def get_available_events():
     if not os.path.isdir("events"):
