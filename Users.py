@@ -2,213 +2,280 @@ import json
 import os
 import sqlite3
 
+import json
+import os
 
-# returns [x,y] if account created x = True, y = userID. else x = False, y = False
 def create_account():
-    sqlite_connection = None
-    try:
-        sqlite_connection = sqlite3.connect("sql.db")
-        cursor = sqlite_connection.cursor()
-        enable_foreign_keys = "PRAGMA foreign_keys = ON;"
-        cursor.execute(enable_foreign_keys)
-        invalid_username = True
-        while invalid_username:
-            username = input("Enter username: ")
-            if username == "<-":
+    invalid_username = True
+    while invalid_username:
+        username = input("Enter username: ")
+        if username == "<-":
+            print()
+            return [False, False]
+
+        if os.path.exists("users/" + username + ".json"):
+            print("Username is taken, please try again")
+        else:
+            user_file = open("users/" + username + ".json", "x")
+            password = input("Enter password: ")
+            if password == "<-":
+                user_file.close()
+                os.remove("users/" + username + ".json")
                 print()
                 return [False, False]
-            else:
-                get_user_query = "SELECT * FROM Users WHERE Username='" + username + "';"
-                cursor.execute(get_user_query)
-                result = cursor.fetchone()
-                if result:
-                    print("User already exists")
-                else:
-                    password = input("Enter password: ")
-                    if password == "<-":
-                        return [False, False]
-                    else:
-                        add_user_query = "INSERT INTO Users(username, password) VALUES('" + username + "', '" + password + "');"
-                        cursor.execute(add_user_query)
-                        user_id_query = "SELECT user_id FROM Users WHERE username = '" + username + "';"
-                        cursor.execute(user_id_query)
-                        user_id = cursor.fetchone()[0]
-                        print("Account creation successful")
-                        return [True, user_id]
-
-    except sqlite3.Error as error:
-        print("Error in Users.create_account(): " + str(error))
-
-    finally:
-        if sqlite_connection:
-            sqlite_connection.commit()
-            sqlite_connection.close()
-
+            user_info = {
+                "username": username,
+                "password": password,
+                "tickets": {},
+                "cart": {}
+            }
+            json_input = json.dumps(user_info)
+            user_file.write(json_input)
+            user_file.close()
+            invalid_username = False
+            print("Account creation successful")
+            return [True, username]
 
 def login():
-    sqlite_connection = None
-    try:
-        sqlite_connection = sqlite3.connect("sql.db")
-        cursor = sqlite_connection.cursor()
-        enable_foreign_keys = "PRAGMA foreign_keys = ON;"
-        cursor.execute(enable_foreign_keys)
+    incorrect_username = True
+    while incorrect_username:
+        username = input("Enter username: ")
+        if username == "<-":
+            print()
+            return [False, False]
 
-        incorrect_username = True
-        incorrect_password = None
-        while incorrect_username:
-            username = input("Enter username: ")
-            if username == "<-":
-                return [False, False]
+        if not os.path.exists("users/" + username + ".json"):
+            print("User doesn't exist, please try again")
+        else:
+            incorrect_username = False
+            incorrect_password = True
+            user_file = open("users/" + username + ".json", "r")
+            user_info = json.load(user_file)
+            user_password = user_info["password"]
 
-            else:
-                get_user_query = "SELECT * FROM Users WHERE Username='" + username + "';"
-                cursor.execute(get_user_query)
-                result = cursor.fetchall()
-                if result:
-                    # break loop
-                    incorrect_username = False
+            while incorrect_password:
+                password_attempt = input("Enter password: ")
+                if password_attempt == "<-":
+                    user_file.close()
+                    print()
                     incorrect_password = True
-
-                    # new loop
-                    while incorrect_password:
-                        password_attempt = input("Enter password: ")
-                        if password_attempt == "<-":
-                            return [False, False]
-                        elif password_attempt == result[0][2]:
-                            incorrect_password = False
-                            user_id_query = "SELECT user_id FROM Users WHERE username = '" + username + "';"
-                            cursor.execute(user_id_query)
-                            user_id = cursor.fetchone()[0]
-                            print("Login successful")
-                            return [True, user_id]
-                        else:
-                            print("Incorrect password, please try again")
-
-
+                    return [False, False]
+                elif password_attempt == user_password:
+                    user_file.close()
+                    incorrect_password = True
+                    print("Login successful")
+                    return [True, username]
                 else:
-                    print("User doesn't exist, please try again")
+                    print("Incorrect password, please try again")
 
-    except sqlite3.Error as error:
-        print("Error in Users.login(): " + str(error))
 
-    finally:
-        if sqlite_connection:
-            sqlite_connection.close()
 
-# Func for testing
-def get_user(username):
-    sqlite_connection = None
-    try:
-        sqlite_connection = sqlite3.connect("sql.db")
-        cursor = sqlite_connection.cursor()
-        enable_foreign_keys = "PRAGMA foreign_keys = ON;"
-        query = "SELECT * FROM Users WHERE Username='" + username + "';"
-        cursor.execute(enable_foreign_keys)
-        cursor.execute(query)
-        result = cursor.fetchall()
-        if result:
-            print(result[0][1])
-        else:
-            print("No such user")
-
-    except sqlite3.Error as error:
-        print("Error in Users.get_user(): " + str(error))
-
-    finally:
-        if sqlite_connection:
-            sqlite_connection.close()
-
-# Func for testing
-def get_all_users():
-    sqlite_connection = None
-    try:
-        sqlite_connection = sqlite3.connect("sql.db")
-        cursor = sqlite_connection.cursor()
-        enable_foreign_keys = "PRAGMA foreign_keys = ON;"
-        query = "SELECT * FROM Users;"
-        cursor.execute(enable_foreign_keys)
-        cursor.execute(query)
-        result = cursor.fetchall()
-        if result:
-            return result
-        else:
-            print("No users")
-
-    except sqlite3.Error as error:
-        print("Error in Users.get_all_users(): " + str(error))
-
-    finally:
-        if sqlite_connection:
-            sqlite_connection.close()
-
-def add_to_cart(username, event_id):
-    sqlite_connection = None
-    try:
-        sqlite_connection = sqlite3.connect("sql.db")
-        cursor = sqlite_connection.cursor()
-        # sqlite doesn't have foreign keys enabled by default must do this every connection
-        enable_foreign_keys = "PRAGMA foreign_keys = ON;"
-        get_user_id_query = "SELECT user_id FROM Users WHERE username = '" + username + "';"
-        cursor.execute(enable_foreign_keys)
-        cursor.execute(get_user_id_query)
-        user_id = cursor.fetchone()[0]
-        print("User id: " + str(user_id))
-        add_to_cart_query = "INSERT INTO Cart(user_id, event_id) VALUES (" + str(user_id) + ", " + str(event_id) + ");"
-        cursor.execute(add_to_cart_query)
-
-    except sqlite3.Error as error:
-        if str(error) == "UNIQUE constraint failed: Cart.user_id, Cart.event_id":
-            print("Event already added to basket")
-        else:
-            print("Error in Users.add_to_cart(): " + str(error))
-
-    finally:
-        if sqlite_connection:
-            sqlite_connection.commit()
-            sqlite_connection.close()
-
-def get_users_cart(user_id):
-    sqlite_connection = None
-    try:
-        sqlite_connection = sqlite3.connect("sql.db")
-        cursor = sqlite_connection.cursor()
-        # sqlite doesn't have foreign keys enabled by default must do this every connection
-        enable_foreign_keys = "PRAGMA foreign_keys = ON;"
-        get_user_cart_query = "SELECT * FROM Cart WHERE user_id = " + str(user_id) + ";"
-        cursor.execute(enable_foreign_keys)
-        cursor.execute(get_user_cart_query)
-        user_cart = cursor.fetchall()
-        return user_cart
-
-    except sqlite3.Error as error:
-        print("Error in Users.get_users_cart(): " + str(error))
-
-    finally:
-        if sqlite_connection:
-            sqlite_connection.close()
-
-def remove_event_from_cart(username, event_id):
-    sqlite_connection = None
-    try:
-        sqlite_connection = sqlite3.connect("sql.db")
-        cursor = sqlite_connection.cursor()
-        # sqlite doesn't have foreign keys enabled by default must do this every connection
-        enable_foreign_keys = "PRAGMA foreign_keys = ON;"
-        get_user_id_query = "SELECT user_id FROM Users WHERE username = '" + username + "';"
-        cursor.execute(enable_foreign_keys)
-        cursor.execute(get_user_id_query)
-        user_id = cursor.fetchone()[0]
-        remove_event_query = "DELETE FROM Cart WHERE user_id = " + str(user_id) + " AND event_id = " + str(event_id) + ";"
-        cursor.execute(remove_event_query)
-        result = cursor.fetchall()
-
-    except sqlite3.Error as error:
-        print("Error in Users.remove_event_from_cart(): " + str(error))
-
-    finally:
-        if sqlite_connection:
-            sqlite_connection.commit()
-            sqlite_connection.close()
+# # returns [x,y] if account created x = True, y = userID. else x = False, y = False
+# def create_account():
+#     sqlite_connection = None
+#     try:
+#         sqlite_connection = sqlite3.connect("sql.db")
+#         cursor = sqlite_connection.cursor()
+#         enable_foreign_keys = "PRAGMA foreign_keys = ON;"
+#         cursor.execute(enable_foreign_keys)
+#         invalid_username = True
+#         while invalid_username:
+#             username = input("Enter username: ")
+#             if username == "<-":
+#                 print()
+#                 return [False, False]
+#             else:
+#                 get_user_query = "SELECT * FROM Users WHERE Username='" + username + "';"
+#                 cursor.execute(get_user_query)
+#                 result = cursor.fetchone()
+#                 if result:
+#                     print("User already exists")
+#                 else:
+#                     password = input("Enter password: ")
+#                     if password == "<-":
+#                         return [False, False]
+#                     else:
+#                         add_user_query = "INSERT INTO Users(username, password) VALUES('" + username + "', '" + password + "');"
+#                         cursor.execute(add_user_query)
+#                         user_id_query = "SELECT user_id FROM Users WHERE username = '" + username + "';"
+#                         cursor.execute(user_id_query)
+#                         user_id = cursor.fetchone()[0]
+#                         print("Account creation successful")
+#                         return [True, user_id]
+#
+#     except sqlite3.Error as error:
+#         print("Error in Users.create_account(): " + str(error))
+#
+#     finally:
+#         if sqlite_connection:
+#             sqlite_connection.commit()
+#             sqlite_connection.close()
+#
+#
+# def login():
+#     sqlite_connection = None
+#     try:
+#         sqlite_connection = sqlite3.connect("sql.db")
+#         cursor = sqlite_connection.cursor()
+#         enable_foreign_keys = "PRAGMA foreign_keys = ON;"
+#         cursor.execute(enable_foreign_keys)
+#
+#         incorrect_username = True
+#         incorrect_password = None
+#         while incorrect_username:
+#             username = input("Enter username: ")
+#             if username == "<-":
+#                 return [False, False]
+#
+#             else:
+#                 get_user_query = "SELECT * FROM Users WHERE Username='" + username + "';"
+#                 cursor.execute(get_user_query)
+#                 result = cursor.fetchall()
+#                 if result:
+#                     # break loop
+#                     incorrect_username = False
+#                     incorrect_password = True
+#
+#                     # new loop
+#                     while incorrect_password:
+#                         password_attempt = input("Enter password: ")
+#                         if password_attempt == "<-":
+#                             return [False, False]
+#                         elif password_attempt == result[0][2]:
+#                             incorrect_password = False
+#                             user_id_query = "SELECT user_id FROM Users WHERE username = '" + username + "';"
+#                             cursor.execute(user_id_query)
+#                             user_id = cursor.fetchone()[0]
+#                             print("Login successful")
+#                             return [True, user_id]
+#                         else:
+#                             print("Incorrect password, please try again")
+#
+#
+#                 else:
+#                     print("User doesn't exist, please try again")
+#
+#     except sqlite3.Error as error:
+#         print("Error in Users.login(): " + str(error))
+#
+#     finally:
+#         if sqlite_connection:
+#             sqlite_connection.close()
+#
+# # Func for testing
+# def get_user(username):
+#     sqlite_connection = None
+#     try:
+#         sqlite_connection = sqlite3.connect("sql.db")
+#         cursor = sqlite_connection.cursor()
+#         enable_foreign_keys = "PRAGMA foreign_keys = ON;"
+#         query = "SELECT * FROM Users WHERE Username='" + username + "';"
+#         cursor.execute(enable_foreign_keys)
+#         cursor.execute(query)
+#         result = cursor.fetchall()
+#         if result:
+#             print(result[0][1])
+#         else:
+#             print("No such user")
+#
+#     except sqlite3.Error as error:
+#         print("Error in Users.get_user(): " + str(error))
+#
+#     finally:
+#         if sqlite_connection:
+#             sqlite_connection.close()
+#
+# # Func for testing
+# def get_all_users():
+#     sqlite_connection = None
+#     try:
+#         sqlite_connection = sqlite3.connect("sql.db")
+#         cursor = sqlite_connection.cursor()
+#         enable_foreign_keys = "PRAGMA foreign_keys = ON;"
+#         query = "SELECT * FROM Users;"
+#         cursor.execute(enable_foreign_keys)
+#         cursor.execute(query)
+#         result = cursor.fetchall()
+#         if result:
+#             return result
+#         else:
+#             print("No users")
+#
+#     except sqlite3.Error as error:
+#         print("Error in Users.get_all_users(): " + str(error))
+#
+#     finally:
+#         if sqlite_connection:
+#             sqlite_connection.close()
+#
+# def add_to_cart(username, event_id):
+#     sqlite_connection = None
+#     try:
+#         sqlite_connection = sqlite3.connect("sql.db")
+#         cursor = sqlite_connection.cursor()
+#         # sqlite doesn't have foreign keys enabled by default must do this every connection
+#         enable_foreign_keys = "PRAGMA foreign_keys = ON;"
+#         get_user_id_query = "SELECT user_id FROM Users WHERE username = '" + username + "';"
+#         cursor.execute(enable_foreign_keys)
+#         cursor.execute(get_user_id_query)
+#         user_id = cursor.fetchone()[0]
+#         print("User id: " + str(user_id))
+#         add_to_cart_query = "INSERT INTO Cart(user_id, event_id) VALUES (" + str(user_id) + ", " + str(event_id) + ");"
+#         cursor.execute(add_to_cart_query)
+#
+#     except sqlite3.Error as error:
+#         if str(error) == "UNIQUE constraint failed: Cart.user_id, Cart.event_id":
+#             print("Event already added to basket")
+#         else:
+#             print("Error in Users.add_to_cart(): " + str(error))
+#
+#     finally:
+#         if sqlite_connection:
+#             sqlite_connection.commit()
+#             sqlite_connection.close()
+#
+# def get_users_cart(user_id):
+#     sqlite_connection = None
+#     try:
+#         sqlite_connection = sqlite3.connect("sql.db")
+#         cursor = sqlite_connection.cursor()
+#         # sqlite doesn't have foreign keys enabled by default must do this every connection
+#         enable_foreign_keys = "PRAGMA foreign_keys = ON;"
+#         get_user_cart_query = "SELECT * FROM Cart WHERE user_id = " + str(user_id) + ";"
+#         cursor.execute(enable_foreign_keys)
+#         cursor.execute(get_user_cart_query)
+#         user_cart = cursor.fetchall()
+#         return user_cart
+#
+#     except sqlite3.Error as error:
+#         print("Error in Users.get_users_cart(): " + str(error))
+#
+#     finally:
+#         if sqlite_connection:
+#             sqlite_connection.close()
+#
+# def remove_event_from_cart(username, event_id):
+#     sqlite_connection = None
+#     try:
+#         sqlite_connection = sqlite3.connect("sql.db")
+#         cursor = sqlite_connection.cursor()
+#         # sqlite doesn't have foreign keys enabled by default must do this every connection
+#         enable_foreign_keys = "PRAGMA foreign_keys = ON;"
+#         get_user_id_query = "SELECT user_id FROM Users WHERE username = '" + username + "';"
+#         cursor.execute(enable_foreign_keys)
+#         cursor.execute(get_user_id_query)
+#         user_id = cursor.fetchone()[0]
+#         remove_event_query = "DELETE FROM Cart WHERE user_id = " + str(user_id) + " AND event_id = " + str(event_id) + ";"
+#         cursor.execute(remove_event_query)
+#         result = cursor.fetchall()
+#
+#     except sqlite3.Error as error:
+#         print("Error in Users.remove_event_from_cart(): " + str(error))
+#
+#     finally:
+#         if sqlite_connection:
+#             sqlite_connection.commit()
+#             sqlite_connection.close()
 
 
 class User():
