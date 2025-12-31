@@ -5,6 +5,7 @@ import random
 import Events
 from datetime import datetime
 
+
 class Ticket():
     def __init__(self):
         # TO DO
@@ -44,8 +45,10 @@ class Ticket():
     def get_type(self):
         return self.type
 
+
 def create_ticket_map():
     return
+
 
 def create_ticket():
     return
@@ -57,6 +60,7 @@ def delete_ticket():
 
 def send_reminder():
     return
+
 
 # what is this function for????
 def apply_filters_and_sorting(event_choice, current_filter=None, current_sort=None):
@@ -171,12 +175,18 @@ def purchase_ticket(username, event_choice, ticket_type, quantity):
     total_cost = price * quantity
     reference = f"REF-{username}-{int(time.time())}-{random.randint(1000, 9999)}"
 
-    print(f"\nPurchase Summary:")
+    # Booking summary
+    print("\n" + "=" * 50)
+    print("BOOKING SUMMARY")
+    print("=" * 50)
     print(f"Event: {event['name']}")
-    print(f"Ticket Type: {ticket_name}")
+    print(f"Date: {event['date']}")
+    print(f"Ticket Type: {ticket_key.replace('_', ' ').title()}")
     print(f"Quantity: {quantity}")
-    print(f"Total: ${total_cost}")
+    print(f"Price per ticket: ${price}")
+    print(f"Total Cost: ${total_cost}")
     print(f"Booking Reference: {reference}")
+    print("=" * 50 + "\n")
 
     confirm = input("Confirm purchase? (Y/N): ").upper()
 
@@ -196,7 +206,8 @@ def purchase_ticket(username, event_choice, ticket_type, quantity):
             "ticket": ticket_name,
             "quantity": quantity,
             "event_date": event["date"],
-            "purchase_date": datetime.now().strftime("%d-%m-%Y")
+            "purchase_date": datetime.now().strftime("%d-%m-%Y"),
+            "total_paid": total_cost
         })
 
         with open(path, "w") as file:
@@ -212,17 +223,16 @@ def purchase_ticket(username, event_choice, ticket_type, quantity):
             print("Ticket successfully downloaded!")
 
         return True
-
-        return True
     else:
         print("Purchase cancelled.")
         return False
+
 
 def view_previous_purchases(username):
     path = f"users/{username}.json"
 
     if not os.path.exists(path):
-        print("no previous purchases found")
+        print("No previous purchases found")
         return
 
     with open(path, "r") as file:
@@ -234,11 +244,22 @@ def view_previous_purchases(username):
         print("No previous purchases found")
         return
 
-    print("\n === Your previous purchases ===")
+    print("\n" + "=" * 60)
+    print("PURCHASE HISTORY")
+    print("=" * 60)
+
     for i, r in enumerate(records, start=1):
-        print(f"{i}. {r.get('ticket', 'Unknown event')}")
-        print(f"  Reference: {r.get('reference', 'NA')}")
-        print("")
+        print(f"\n{i}. {r.get('ticket', 'Unknown event')}")
+        print(f"   Reference: {r.get('reference', 'N/A')}")
+        print(f"   Quantity: {r.get('quantity', 'N/A')}")
+        if r.get('event_date'):
+            print(f"   Event Date: {r['event_date']}")
+        if r.get('total_paid'):
+            print(f"   Total Paid: ${r['total_paid']}")
+        print("   " + "-" * 40)
+
+    print("=" * 60)
+
 
 def add_ticket_to_cart(ticket, user):
     if not os.path.exists("users/" + user + ".json"):
@@ -253,6 +274,7 @@ def add_ticket_to_cart(ticket, user):
         file = open("users/" + user + ".json", "w")
         json.dump(user_info, file)
         file.close()
+
 
 def remove_ticket_from_cart(ticket, user):
     if not os.path.exists("users/" + user + ".json"):

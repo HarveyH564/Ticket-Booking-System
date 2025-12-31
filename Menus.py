@@ -35,6 +35,8 @@ def logged_in_menu():
     elif user_input == "U":
         print(Events.get_available_events())
     return
+
+
 def show_seat_map():
     print("\n=== Seat Map (O = available, X = occupied) ===")
     print("    1  2  3  4  5")
@@ -55,13 +57,11 @@ def view_all_events_menu(event_list, user_id):
         print("\tDescription: " + event[5] + "\n")
         event_index += 1
 
-    at_events_menu = True
-    while at_events_menu:
+    while True:
         user_input = input("Select an event or go back [1, 2, ..., <-]: ")
         try:
             if user_input == "<-":
-                at_events_menu = True
-                user_menu(user_id)
+                return  # Fixed: Simply return, don't call user_menu
             elif int(user_input) <= event_index:
                 # get event
                 event = event_list[int(user_input) - 1]
@@ -72,28 +72,73 @@ def view_all_events_menu(event_list, user_id):
             print("Invalid input")
 
 
+# Admin functions
+def admin_login():
+    """Simple admin login"""
+    print("\n=== ADMIN LOGIN ===")
+    username = input("Admin Username: ")
+    password = input("Password: ")
+
+    if username == "Admin" and password == "1234":
+        print("Admin login successful!")
+        return True
+    else:
+        print("Invalid admin credentials!")
+        return False
+
+
+def admin_menu():
+    """Admin menu for managing questions"""
+    import Questions
+
+    while True:
+        print("\n=== ADMIN PANEL ===")
+        print("1. View & Reply to User Questions")
+        print("2. Logout")
+
+        choice = input("Select an option (1-2): ")
+
+        if choice == "1":
+            # Get unanswered questions
+            questions = Questions.get_unanswered_questions()
+
+            if not questions:
+                print("\nNo new questions from users.")
+                continue
+
+            print(f"\n=== User Questions ({len(questions)} unanswered) ===")
+            for q in questions:
+                print(f"\nQuestion ID: {q['id']}")
+                print(f"From: {q['user']}")
+                print(f"Question: {q['question']}")
+                print(f"Time: {q['timestamp']}")
+
+                response = input("\nType response (or press Enter to skip, 'delete' to remove): ")
+
+                if response.strip().lower() == "delete":
+                    if Questions.delete_question(q['id']):
+                        print("Question deleted!")
+                    else:
+                        print("Failed to delete question.")
+                elif response.strip():
+                    if Questions.respond_to_question(q['id'], response):
+                        print("Response sent!")
+                    else:
+                        print("Failed to send response.")
+                else:
+                    print("Skipped this question.")
+
+        elif choice == "2":
+            print("Logging out...")
+            break
+        else:
+            print("Invalid option! Please select 1-2.")
+
+
 def user_menu(user_id):
     # Menu for logged-in users
-
-    sqlite_connection = None
-    try:
-        import sqlite3
-        sqlite_connection = sqlite3.connect("sql.db")
-        cursor = sqlite_connection.cursor()
-        query = "SELECT username FROM Users WHERE user_id = " + str(user_id) + ";"
-        cursor.execute(query)
-        result = cursor.fetchone()
-        if result:
-            username = result[0]  # Get username
-        else:
-            print("Error: Could not find username for user ID", user_id)
-            return
-    except Exception as error:
-        print("Error getting username: " + str(error))
-        return
-    finally:
-        if sqlite_connection:
-            sqlite_connection.close()
+    # user_id is actually the username (from JSON system)
+    username = user_id
 
     # Check for reminders
     try:
@@ -208,12 +253,11 @@ def user_menu(user_id):
             if all_events == "No events exist please create one":
                 print("No events\n")
             else:
-                at_user_menu = False
                 view_all_events_menu(all_events, user_id)
+
 
         elif choice == "4":
             Users.update_user_details(username)
-
 
 
         elif choice == "5":
