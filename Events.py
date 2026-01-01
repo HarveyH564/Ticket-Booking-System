@@ -1,5 +1,6 @@
 import json
 import os
+import Users
 import datetime
 import sqlite3
 
@@ -108,8 +109,31 @@ def create_event(event_name, venue_name, tickets, start_date, end_date, descript
 def update_event():
     return
 
-def delete_event():
-    return
+
+
+def delete_event(event_name: str) -> bool:
+    # 1) Remove tickets from all users first
+    refunded_count = Users.refund_event_tickets(event_name)
+    print(f"Removed '{event_name}' tickets from {refunded_count} user(s).")
+
+    # 2) Delete the event JSON file
+    filename = event_name.replace(" ", "_").lower() + ".json"
+    path = os.path.join("events", filename)
+
+    if os.path.exists(path):
+        os.remove(path)
+        print("Event deleted.")
+        return True
+    else:
+        print("Event file not found.")
+        return False
+
+
+
+
+
+
+
 
 def find_popular_events():
     print("\n=== Popular Upcoming Events===")
@@ -224,6 +248,9 @@ def show_event_tickets(event_choice, filter_type=None, sort_type=None):
         count += 1
     print("===============================\n")
     return event, option_map
+
+
+
 
 
 # def add_event(event_name, venue_id, start_date, end_date, description):

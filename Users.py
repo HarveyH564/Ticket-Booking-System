@@ -2,6 +2,7 @@ import json
 import os
 import sqlite3
 
+
 import json
 import os
 
@@ -488,8 +489,38 @@ def update_user(old_username, new_username, new_password):
 
     return True
 
+def refund_event_tickets(event_name):
+    if not os.path.exists(USERS_DIR):
+        return 0
 
-#print(get_all_users())
-#add_to_cart("Bob", 1)
-#remove_event_from_cart("Bob", 5)
-#print(get_users_cart(1))
+    updated = 0
+
+    for file in os.listdir(USERS_DIR):
+        if not file.endswith(".json"):
+            continue
+
+        path = os.path.join(USERS_DIR, file)
+        with open(path, "r") as f:
+            data = json.load(f)
+
+        changed = False
+
+        tickets = data.get("tickets", {})
+        for key in list(tickets.keys()):
+            if key.startswith(event_name + " -"):
+                del tickets[key]
+                changed = True
+        data["tickets"] = tickets
+
+        records = data.get("ticket_records", [])
+        new_records = [r for r in records if not str(r.get("ticket", "")).startswith(event_name + " -")]
+        if len(new_records) != len(records):
+            data["ticket_records"] = new_records
+            changed = True
+
+        if changed:
+            with open(path, "w") as f:
+                json.dump(data, f, indent=2)
+            updated += 1
+
+    return updated
