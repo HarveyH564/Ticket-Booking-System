@@ -85,6 +85,79 @@ def admin_login():
     else:
         print("Invalid admin credentials!")
         return False
+def admin_manage_user_menu():
+    while True:
+        print("\n=== ADMIN MANAGE USER ===")
+        print("1. View all user")
+        print("2. add new users")
+        print("3. update user")
+        print("4. delete user")
+        print("5. Back")
+
+        choice=input("Select an option (1-5): ")
+
+        if choice == "1":
+            users = Users.list_all_users()
+
+            if not users:
+                print("No users found!")
+
+            else:
+                print("\n User:")
+                for u in users:
+                    print(f" - {u}")
+
+        elif choice == "2":
+            username = input("New Username: ").strip()
+            password = input("New Password: ").strip()
+
+            if Users.create_user(username, password):
+                print("User created successfully!")
+
+            else:
+                print("username already taken!")
+        elif choice == "3":
+            old_username = input("Current Username: ").strip()
+
+            if not Users.user_exists(old_username):
+                print("User does not exist!")
+                continue
+
+            user = Users.load_user(old_username)
+
+            print("Leave blank to keep current username/password.")
+            new_username = input("New Username: ").strip()
+            new_password = input("New Password: ").strip()
+
+            if not new_username:
+                new_username = old_username
+
+            current_password = user.get("password,")
+            if not new_password != new_password:
+                new_password = user["password"]
+
+            success = Users.update_user(old_username, new_username, new_password)
+
+            if success:
+                print("User successfully updated!")
+            else:
+                print("Update failed (maybe new username already taken).")
+
+
+
+        elif choice == "4":
+            username = input("Username to delete: ").strip()
+            if Users.delete_user(username):
+                print("User deleted.")
+            else:
+                print("User not found.")
+
+
+        elif choice == "5" or choice == "<-":
+            return
+
+        else:
+            print("Invalid option.")
 
 
 def admin_menu():
@@ -94,9 +167,11 @@ def admin_menu():
     while True:
         print("\n=== ADMIN PANEL ===")
         print("1. View & Reply to User Questions")
-        print("2. Logout")
+        print("2. View all events")
+        print("3. Manage user accounts (add/update/delete user account")
+        print("4. Logout")
 
-        choice = input("Select an option (1-2): ")
+        choice = input("Select an option (1-4): ")
 
         if choice == "1":
             # Get unanswered questions
@@ -129,10 +204,19 @@ def admin_menu():
                     print("Skipped this question.")
 
         elif choice == "2":
+            Events.show_available_events()
+
+
+        elif choice == "3":
+            admin_manage_user_menu()
+
+
+        elif choice == "4":
             print("Logging out...")
             break
         else:
-            print("Invalid option! Please select 1-2.")
+            print("Invalid option! Please select 1-3.")
+
 
 
 def user_menu(user_id):

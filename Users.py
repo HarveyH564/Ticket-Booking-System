@@ -416,6 +416,79 @@ def update_user_details(username):
 
     print("User details updated successfully!\n")
 
+
+# ===== ADMIN USER MANAGEMENT HELPERS =====
+
+
+
+USERS_DIR = "users"
+
+def user_file(username):
+    return os.path.join(USERS_DIR, f"{username}.json")
+
+def user_exists(username):
+    return os.path.exists(user_file(username))
+
+def list_all_users():
+    if not os.path.exists(USERS_DIR):
+        return []
+    return sorted(
+        filename[:-5]
+        for filename in os.listdir(USERS_DIR)
+        if filename.endswith(".json")
+    )
+
+def load_user(username):
+    if not user_exists(username):
+        return None
+    with open(user_file(username), "r") as f:
+        return json.load(f)
+
+def create_user(username, password):
+    if not username or not password:
+        return False
+    if user_exists(username):
+        return False
+
+    data = {
+        "username": username,
+        "password": password,
+        "tickets": {},
+        "cart": {}
+    }
+    with open(user_file(username), "w") as f:
+        json.dump(data, f, indent=4)
+    return True
+
+def delete_user(username):
+    if not user_exists(username):
+        return False
+    os.remove(user_file(username))
+    return True
+
+def update_user(old_username, new_username, new_password):
+    if not user_exists(old_username):
+        return False
+
+    if new_username != old_username and user_exists(new_username):
+        return False
+
+    data = load_user(old_username)
+    data["username"] = new_username
+    data["password"] = new_password
+
+    old_path = user_file(old_username)
+    new_path = user_file(new_username)
+
+    if new_username != old_username:
+        os.rename(old_path, new_path)
+
+    with open(user_file(new_username), "w") as f:
+        json.dump(data, f, indent=4)
+
+    return True
+
+
 #print(get_all_users())
 #add_to_cart("Bob", 1)
 #remove_event_from_cart("Bob", 5)
