@@ -75,7 +75,6 @@ class Event():
                 event_file.close()
                 print("Event saved successfully")
 
-# testing with a events list can be changed later
 event1 = Event()
 # Using direct attributes instead of setters to avoid AttributeError
 event1.venue = "Club21"
@@ -321,32 +320,24 @@ def show_event_tickets(event_choice, filter_type=None, sort_type=None):
 #             sqlite_connection.close()
 
 def get_all_events():
-    # if there's no events
     if not os.path.isdir("events"):
-        # TO CHANGE user cant make events
         return ["No events exist please create one"]
     else:
         event_list = []
         for file in os.listdir("events"):
             f = open("events/" + file, "r")
             file_info = json.loads(f.read())
-            event_list.append(file_info)
-            f.close()
-        return event_list
 
-def get_available_events():
-    if not os.path.isdir("events"):
-        # TO CHANGE user cant make events
-        return ["No events exist please create one"]
-    else:
-        event_list = []
-        for file in os.listdir("events"):
-            f = open("events/" + file, "r")
-            file_info = json.loads(f.read())
-            if datetime.datetime.strptime(file_info["Start date"], "%d-%m-%Y").date() >= datetime.date.today() and file_info["Tickets"] != None:
-                event_list.append(file_info["Event name"])
+            event_tuple = (
+                file_info.get("Event name", ""),      # Index 0
+                file_info.get("Event name", ""),      # Index 1 (same as 0 for now)
+                file_info.get("Venue", ""),           # Index 2
+                file_info.get("Start date", ""),      # Index 3
+                file_info.get("End date", ""),        # Index 4
+                file_info.get("Description", "")      # Index 5
+            )
+            event_list.append(event_tuple)
             f.close()
-        # if there are events but none upcoming
         return event_list
 
 def show_available_events():

@@ -1,6 +1,7 @@
 import Users
 import Events
 import Tickets
+import Venues
 import json
 from datetime import datetime, timedelta
 
@@ -61,7 +62,7 @@ def view_all_events_menu(event_list, user_id):
         user_input = input("Select an event or go back [1, 2, ..., <-]: ")
         try:
             if user_input == "<-":
-                return  # Fixed: Simply return, don't call user_menu
+                return
             elif int(user_input) <= event_index:
                 # get event
                 event = event_list[int(user_input) - 1]
@@ -74,7 +75,7 @@ def view_all_events_menu(event_list, user_id):
 
 # Admin functions
 def admin_login():
-    """Simple admin login"""
+    # Simple admin login
     print("\n=== ADMIN LOGIN ===")
     username = input("Admin Username: ")
     password = input("Password: ")
@@ -85,6 +86,8 @@ def admin_login():
     else:
         print("Invalid admin credentials!")
         return False
+
+
 def admin_manage_user_menu():
     while True:
         print("\n=== ADMIN MANAGE USER ===")
@@ -94,7 +97,7 @@ def admin_manage_user_menu():
         print("4. delete user")
         print("5. Back")
 
-        choice=input("Select an option (1-5): ")
+        choice = input("Select an option (1-5): ")
 
         if choice == "1":
             users = Users.list_all_users()
@@ -143,15 +146,12 @@ def admin_manage_user_menu():
             else:
                 print("Update failed (maybe new username already taken).")
 
-
-
         elif choice == "4":
             username = input("Username to delete: ").strip()
             if Users.delete_user(username):
                 print("User deleted.")
             else:
                 print("User not found.")
-
 
         elif choice == "5" or choice == "<-":
             return
@@ -210,18 +210,76 @@ def filter_events_menu():
             print("Invalid option.")
 
 
+# Venue management functions for admins
+def admin_manage_venues():
+    while True:
+        print("\n=== VENUE MANAGEMENT ===")
+        print("1. Add new venue")
+        print("2. List all venues")
+        print("3. Delete venue")
+        print("4. Resize venue")
+        print("5. Back")
+
+        choice = input("Select option (1-5): ").strip()
+
+        if choice == "1":
+            name = input("Venue name: ").strip()
+            if name:
+                rows = input("Number of rows (default 5): ").strip()
+                cols = input("Number of seats per row (default 5): ").strip()
+
+                if not rows:
+                    rows = 5
+                if not cols:
+                    cols = 5
+
+                success, msg = Venues.add_venue(name, rows, cols)
+                print(msg)
+            else:
+                print("Venue name cannot be empty")
+
+        elif choice == "2":
+            venues = Venues.list_venues()
+            if venues:
+                for v in venues:
+                    print(f"- {v}")
+            else:
+                print("No venues found")
+
+        elif choice == "3":
+            name = input("Venue to delete: ").strip()
+            if name:
+                success, msg = Venues.delete_venue(name)
+                print(msg)
+
+        elif choice == "4":
+            name = input("Venue to resize: ").strip()
+            if name:
+                rows = input("New number of rows: ").strip()
+                cols = input("New seats per row: ").strip()
+                if rows and cols:
+                    success, msg = Venues.resize_venue(name, rows, cols)
+                    print(msg)
+                else:
+                    print("Both rows and columns required")
+
+        elif choice == "5":
+            break
+
+
 def admin_menu():
-    """Admin menu for managing questions"""
+    # Admin menu for managing questions
     import Questions
 
     while True:
         print("\n=== ADMIN PANEL ===")
         print("1. View & Reply to User Questions")
         print("2. View all events")
-        print("3. Manage user accounts (add/update/delete user account")
-        print("4. Logout")
+        print("3. Manage user accounts")
+        print("4. Manage venues")
+        print("5. Logout")
 
-        choice = input("Select an option (1-4): ")
+        choice = input("Select an option (1-5): ")
 
         if choice == "1":
             # Get unanswered questions
@@ -256,17 +314,17 @@ def admin_menu():
         elif choice == "2":
             Events.show_available_events()
 
-
         elif choice == "3":
             admin_manage_user_menu()
 
-
         elif choice == "4":
+            admin_manage_venues()
+
+        elif choice == "5":
             print("Logging out...")
             break
         else:
-            print("Invalid option! Please select 1-3.")
-
+            print("Invalid option! Please select 1-5.")
 
 
 def user_menu(user_id):
@@ -408,4 +466,5 @@ def user_menu(user_id):
         elif choice == "<-":
             print("Cannot go back from main menu")
         else:
+            print("Invalid option! Please select 1-6.")
             print("Invalid option! Please select 1-6.")
