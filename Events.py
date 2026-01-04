@@ -357,3 +357,31 @@ def show_available_events():
     print("3. International band performance")
     print("4. Local band performance")
     print("=========================\n")
+
+from datetime import datetime
+
+def _hardcoded_events():
+    return [
+        {"id": "1", "name": "Rock concert", "date": "30-12-2025", "genre": "Rock", "tickets_left": 50},
+        {"id": "2", "name": "Pop concert", "date": "05-01-2026", "genre": "Pop", "tickets_left": 0},
+        {"id": "3", "name": "International band performance", "date": "20-01-2026", "genre": "Rock", "tickets_left": 12},
+        {"id": "4", "name": "Local band performance", "date": "30-02-2026", "genre": "Indie", "tickets_left": 7},
+    ]
+
+def filter_events_by_date_range(start_date_str, end_date_str):
+    start = datetime.strptime(start_date_str, "%d-%m-%Y").date()
+    end = datetime.strptime(end_date_str, "%d-%m-%Y").date()
+    result = []
+    for e in _hardcoded_events():
+        d = datetime.strptime(e["date"], "%d-%m-%Y").date()
+        if start <= d <= end:
+            result.append(e)
+    return result
+
+def filter_events_by_tickets_left(min_left):
+    min_left = int(min_left)
+    return [e for e in _hardcoded_events() if int(e["tickets_left"]) >= min_left]
+
+def filter_events_by_genre(genre):
+    genre = genre.strip().lower()
+    return [e for e in _hardcoded_events() if e["genre"].strip().lower() == genre]

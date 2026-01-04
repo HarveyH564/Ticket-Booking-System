@@ -159,6 +159,56 @@ def admin_manage_user_menu():
         else:
             print("Invalid option.")
 
+def _print_filtered_events(events):
+    if not events:
+        print("\nNo events match your filter.\n")
+        return
+    print("\n=== FILTER RESULTS ===")
+    for i, e in enumerate(events, start=1):
+        print(f"{i}. {e['name']}")
+        print(f"   Date: {e['date']}")
+        print(f"   Genre: {e['genre']}")
+        print(f"   Tickets left: {e['tickets_left']}")
+    print("======================\n")
+
+
+def filter_events_menu():
+    while True:
+        print("\n=== FILTER EVENTS ===")
+        print("1. Filter by Date Range")
+        print("2. Filter by Tickets Left")
+        print("3. Filter by Genre/Category")
+        print("4. Back")
+
+        choice = input("Select an option (1-4): ").strip()
+
+        if choice == "1":
+            start_date = input("Start date (DD-MM-YYYY): ").strip()
+            end_date = input("End date (DD-MM-YYYY): ").strip()
+            try:
+                results = Events.filter_events_by_date_range(start_date, end_date)
+                _print_filtered_events(results)
+            except ValueError:
+                print("Invalid date format. Use DD-MM-YYYY.")
+
+        elif choice == "2":
+            min_left = input("Minimum tickets left: ").strip()
+            try:
+                results = Events.filter_events_by_tickets_left(min_left)
+                _print_filtered_events(results)
+            except ValueError:
+                print("Enter a valid number.")
+
+        elif choice == "3":
+            genre = input("Genre (e.g. Rock, Pop, Indie): ").strip()
+            results = Events.filter_events_by_genre(genre)
+            _print_filtered_events(results)
+
+        elif choice == "4" or choice == "<-":
+            return
+        else:
+            print("Invalid option.")
+
 
 def admin_menu():
     """Admin menu for managing questions"""
@@ -270,7 +320,8 @@ def user_menu(user_id):
         print("3. View All Events")
         print("4. Update User Details")
         print("5. View previous purchases")
-        print("6. Logout")
+        print("6. Filter events menu ")
+        print("7. Logout")
 
         choice = input("Select an option (1-6): ")
 
@@ -348,6 +399,9 @@ def user_menu(user_id):
             Tickets.view_previous_purchases(username)
 
         elif choice == "6":
+            filter_events_menu()
+
+        elif choice == "7":
             print("Logging out...")
             at_user_menu = False
 
