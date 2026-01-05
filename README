@@ -1,0 +1,88 @@
+For the test to be accurate please have pytest downloaded and coverage through these bash codes on Pycharms terminal:
+pip install pytest
+pip install coverage
+
+Coverage report
+This section shows how to run different types of coverage reports such as only whitebox, blackbox or both of them combined.
+
+Before running the coverage reports use “coverage erase” for better results.
+
+The the generated html report can be found in "htmlcov" folder and then if you open index.html on a browser you can see the report properly.
+
+1. Run everything
+coverage erase
+coverage run -m pytest AS1456.test/
+coverage report -m
+coverage html
+
+2. All Whitebox
+coverage erase
+coverage run -m pytest AS1456.test/whitebox/
+coverage report -m (use HYPHEN, not en dash)
+coverage html
+
+3. All Blackbox
+coverage erase
+coverage run -m pytest AS1456.test/blackbox/
+coverage report -m (use HYPHEN, not en dash)
+coverage html
+
+4. Combined
+coverage erase
+coverage run -m pytest AS1456.test/ (OR) coverage run -m unittest discover AS1456.test
+coverage report -m (use HYPHEN, not en dash)
+coverage html
+
+5. Just Random
+coverage erase
+coverage run -m pytest AS1456.test/blackbox/random_based/
+coverage report -m (use HYPHEN, not en dash)
+coverage html
+
+6. Just Condition
+coverage erase
+coverage run -m pytest AS1456.test/whitebox/condition_based/
+coverage report -m (use HYPHEN, not en dash)
+coverage html
+
+7. Just Loop
+coverage erase
+coverage run -m pytest AS1456.test/whitebox/loop_based/
+coverage report -m (use HYPHEN, not en dash)
+coverage html
+
+8. Just Path
+coverage erase
+coverage run -m pytest AS1456.test/whitebox/path_based/
+coverage report -m (use HYPHEN, not en dash)
+coverage html
+
+9. Just Specification
+coverage erase
+coverage run -m pytest AS1456.test/blackbox/specification_based/
+coverage report -m (use HYPHEN, not en dash)
+coverage htm.
+
+10. White-box: Concolic Testing only
+coverage erase
+coverage run -m pytest AS1456.test/whitebox/concolic_testing/
+coverage report -m
+coverage html
+
+11. White-box: Symbolic Execution only
+coverage erase
+coverage run -m pytest AS1456.test/whitebox/symbolic_execution/
+coverage report -m
+coverage html
+
+12. Symbolic + Concolic combined
+coverage erase
+coverage run -m pytest AS1456.test/whitebox/symbolic_execution/ AS1456.test/whitebox/concolic_testing/
+coverage report -m
+coverage html
+
+13. All White-box including Symbolic/Concolic
+coverage erase
+coverage run -m pytest AS1456.test/whitebox/
+coverage report -m
+coverage html
