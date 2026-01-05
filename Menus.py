@@ -173,44 +173,41 @@ def _print_filtered_events(events):
 
 
 def filter_events_menu():
-    while True:
-        print("\n=== FILTER EVENTS ===")
-        print("1. Filter by Date Range")
-        print("2. Filter by Tickets Left")
-        print("3. Filter by Genre/Category")
-        print("4. Back")
+    results = None
 
-        choice = input("Select an option (1-4): ").strip()
+    print("\n=== Filter Events ===")
+    print("1. By date range")
+    print("2. By tickets left")
+    print("3. By genre")
+    print("4. Back")
 
-        if choice == "1":
-            start_date = input("Start date (DD-MM-YYYY): ").strip()
-            end_date = input("End date (DD-MM-YYYY): ").strip()
-            try:
-                results = Events.filter_events_by_date_range(start_date, end_date)
-                _print_filtered_events(results)
-            except ValueError:
-                print("Invalid date format. Use DD-MM-YYYY.")
+    choice = input("Select: ")
 
-        elif choice == "2":
-            min_left = input("Minimum tickets left: ").strip()
-            try:
-                results = Events.filter_events_by_tickets_left(min_left)
-                _print_filtered_events(results)
-            except ValueError:
-                print("Enter a valid number.")
+    if choice == "1":
+        start = input("Start date (DD-MM-YYYY): ")
+        end = input("End date (DD-MM-YYYY): ")
+        results = Events.filter_events_by_date_range(start, end)
 
-        elif choice == "3":
-            genre = input("Genre (e.g. Rock, Pop, Indie): ").strip()
-            results = Events.filter_events_by_genre(genre)
-            _print_filtered_events(results)
+    elif choice == "2":
+        min_left = input("Minimum tickets left: ")
+        results = Events.filter_events_by_tickets_left(min_left)
 
-        elif choice == "4" or choice == "<-":
-            return
-        else:
-            print("Invalid option.")
+    elif choice == "3":
+        genre = input("Genre: ")
+        results = Events.filter_events_by_genre(genre)
 
+    elif choice == "4":
+        return
 
-# Venue management functions for admins
+    else:
+        print("Invalid option.")
+        return
+
+    if not results:
+        print("No events matched your filter.")
+        return
+
+    _print_filtered_events(results)
 def admin_manage_venues():
     while True:
         print("\n=== VENUE MANAGEMENT ===")
@@ -381,7 +378,7 @@ def user_menu(user_id):
         print("6. Filter events menu ")
         print("7. Logout")
 
-        choice = input("Select an option (1-6): ")
+        choice = input("Select an option (1-7): ")
 
         if choice == "1":
             Events.show_available_events()
@@ -466,5 +463,5 @@ def user_menu(user_id):
         elif choice == "<-":
             print("Cannot go back from main menu")
         else:
-            print("Invalid option! Please select 1-6.")
-            print("Invalid option! Please select 1-6.")
+            print("Invalid option! Please select 1-7.")
+            print("Invalid option! Please select 1-7.")

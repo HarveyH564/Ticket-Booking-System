@@ -127,55 +127,44 @@ def apply_filters_and_sorting(event_choice, current_filter=None, current_sort=No
 
 
 def purchase_ticket(username, event_choice, ticket_type, quantity):
-    events = {
-        "1": {
-            "name": "Rock concert",
-            "date": "30-12-2025",
-            "general": 25,
-            "vip": 60,
-            "meet_greet": 120
-        },
-        "2": {
-            "name": "Pop concert",
-            "general": 35,
-            "date": "05-01-2026",
-            "vip": 75,
-            "meet_greet": 150
-        },
-        "3": {
-            "name": "International band performance",
-            "general": 30,
-            "date": "20-01-2026",
-            "vip": 80,
-            "meet_greet": 200
-        },
-        "4": {
-            "name": "Local band performance",
-            "general": 20,
-            "date": "30-02-2026",
-            "vip": 45,
-            "meet_greet": 90
-        }
-    }
+    events = Events.EVENTS
 
     if event_choice not in events:
         print("Invalid event choice!")
         return False
 
     event = events[event_choice]
-    ticket_map = {"1": "general", "2": "vip", "3": "meet_greet"}
 
+    tickets_left = int(event.get("tickets_left", 0))
+    if tickets_left <= 0:
+        print("Sorry, this event is sold out!")
+        return False
+
+    if quantity <= 0:
+        print("Quantity must be at least 1.")
+        return False
+
+    if quantity > tickets_left:
+        print(f"Only {tickets_left} tickets left.")
+        return False
+
+    ticket_map = {"1": "general", "2": "vip", "3": "meet_greet"}
     if ticket_type not in ticket_map:
         print("Invalid ticket type!")
         return False
 
     ticket_key = ticket_map[ticket_type]
+
+    prices = event.get("prices", {})
+    if ticket_key not in prices:
+        print("Ticket type not available for this event.")
+        return False
+
+    price = prices[ticket_key]
     ticket_name = f"{event['name']} - {ticket_key.replace('_', ' ').title()}"
-    price = event[ticket_key]
     total_cost = price * quantity
     reference = f"REF-{username}-{int(time.time())}-{random.randint(1000, 9999)}"
 
-    # Booking summary
     print("\n" + "=" * 50)
     print("BOOKING SUMMARY")
     print("=" * 50)
@@ -191,6 +180,9 @@ def purchase_ticket(username, event_choice, ticket_type, quantity):
     confirm = input("Confirm purchase? (Y/N): ").upper()
 
     if confirm == "Y":
+        # reduce tickets (OPTION 1: only lasts while program is running)
+        event["tickets_left"] = tickets_left - quantity
+
         os.makedirs("users", exist_ok=True)
         path = f"users/{username}.json"
 
@@ -216,6 +208,9 @@ def purchase_ticket(username, event_choice, ticket_type, quantity):
         print("\nPurchase successful!")
         print(f"Your unique booking reference is: {reference}\n")
 
+        if event["tickets_left"] == 0:
+            print("This event is now SOLD OUT.")
+
         print("1. Download Ticket")
         print("2. Back to menu")
         post = input("Select: ")
@@ -226,7 +221,6 @@ def purchase_ticket(username, event_choice, ticket_type, quantity):
     else:
         print("Purchase cancelled.")
         return False
-
 
 def view_previous_purchases(username):
     path = f"users/{username}.json"

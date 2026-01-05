@@ -5,6 +5,18 @@ import datetime
 import sqlite3
 
 
+EVENTS = {
+    "1": {"name": "Rock concert", "date": "30-05-2026", "genre": "Rock", "tickets_left": 50,
+          "prices": {"general": 25, "vip": 60, "meet_greet": 120}},
+    "2": {"name": "Pop concert", "date": "05-09-2026", "genre": "Pop", "tickets_left":80,
+          "prices": {"general": 35, "vip": 75, "meet_greet": 150}},
+    "3": {"name": "International band performance", "date": "20-01-2026", "genre": "Rock", "tickets_left": 12,
+          "prices": {"general": 30, "vip": 80, "meet_greet": 200}},
+    "4": {"name": "Local band performance", "date": "30-02-2026", "genre": "Indie", "tickets_left": 17,
+          "prices": {"general": 20, "vip": 45, "meet_greet": 90}},
+}
+
+
 class Event():
     def __init__(self):
         # TO DO
@@ -167,77 +179,38 @@ def get_events_admin():
 
 
 
-def show_available_events():
-    print("\n=== Available Events ===")
-    print("1. Rock concert")
-    print("2. Pop concert")
-    print("3. International band performance")
-    print("4. Local band performance")
-    print("=========================\n")
 
 
 def show_event_tickets(event_choice, filter_type=None, sort_type=None):
-    events = {
-        "1": {
-            "name": "Rock concert",
-            "date": "30-12-2025",
-            "tickets": {
-                "general": {"price": 25, "description": "General Admission"},
-                "vip": {"price": 60, "description": "VIP Access + Lounge"},
-                "meet_greet": {"price": 120, "description": "Meet & Greet Pass"}
-            }
-        },
-        "2": {
-            "name": "Pop concert",
-            "date": "05-01-2026",
-            "tickets": {
-                "general": {"price": 35, "description": "General Admission"},
-                "vip": {"price": 75, "description": "VIP Front Row"},
-                "meet_greet": {"price": 150, "description": "Meet & Greet Pass"}
-            }
-        },
-        "3": {
-            "name": "International band performance",
-            "date": "20-01-2026",
-            "tickets": {
-                "general": {"price": 30, "description": "General Admission"},
-                "vip": {"price": 80, "description": "VIP Premium Seating"},
-                "meet_greet": {"price": 200, "description": "Meet & Greet Backstage"}
-            }
-        },
-        "4": {
-            "name": "Local band performance",
-            "date": "30-02-2026",
-            "tickets": {
-                "general": {"price": 20, "description": "General Admission"},
-                "vip": {"price": 45, "description": "VIP Backstage Pass"},
-                "meet_greet": {"price": 90, "description": "Meet & Greet Pass"}
-            }
-        }
-    }
-
-    if event_choice not in events:
+    if event_choice not in EVENTS:
         print("Invalid event choice!")
         return None, None
 
-    event = events[event_choice]
-    tickets = event["tickets"]
+    event = EVENTS[event_choice]
+    tickets = event["prices"]
+
+    ticket_meta = {
+        "general": {"price": tickets["general"], "description": "General Admission"},
+        "vip": {"price": tickets["vip"], "description": "VIP Access"},
+        "meet_greet": {"price": tickets["meet_greet"], "description": "Meet & Greet"}
+    }
 
     if filter_type in ["vip", "general", "meet_greet"]:
-        tickets = {filter_type: tickets[filter_type]}
+        ticket_meta = {filter_type: ticket_meta[filter_type]}
     elif filter_type == "price_under_50":
-        tickets = {k: v for k, v in tickets.items() if v["price"] < 50}
+        ticket_meta = {k: v for k, v in ticket_meta.items() if v["price"] < 50}
     elif filter_type == "price_over_50":
-        tickets = {k: v for k, v in tickets.items() if v["price"] >= 50}
+        ticket_meta = {k: v for k, v in ticket_meta.items() if v["price"] >= 50}
 
     if sort_type == "price_low_high":
-        sorted_tickets = sorted(tickets.items(), key=lambda x: x[1]["price"])
+        sorted_tickets = sorted(ticket_meta.items(), key=lambda x: x[1]["price"])
     elif sort_type == "price_high_low":
-        sorted_tickets = sorted(tickets.items(), key=lambda x: x[1]["price"], reverse=True)
+        sorted_tickets = sorted(ticket_meta.items(), key=lambda x: x[1]["price"], reverse=True)
     else:
-        sorted_tickets = sorted(tickets.items())
+        sorted_tickets = sorted(ticket_meta.items())
 
     print(f"\n=== {event['name']} Ticket Options ===")
+    print(f"Tickets left: {event['tickets_left']}")
     option_map = {}
     count = 1
     for key, info in sorted_tickets:
@@ -246,6 +219,7 @@ def show_event_tickets(event_choice, filter_type=None, sort_type=None):
         option_map[str(count)] = key
         count += 1
     print("===============================\n")
+
     return event, option_map
 
 
@@ -340,39 +314,58 @@ def get_all_events():
             f.close()
         return event_list
 
+def get_available_event_ids():
+    return [eid for eid, e in EVENTS.items() if e.get("tickets_left", 0) > 0]
+
+
 def show_available_events():
-    # Available events
     print("\n=== Available Events ===")
-    print("1. Rock concert")
-    print("2. Pop concert")
-    print("3. International band performance")
-    print("4. Local band performance")
+    available = get_available_event_ids()
+
+    if not available:
+        print("No available events (all sold out).")
+        print("=========================\n")
+        return
+
+    for eid in available:
+        e = EVENTS[eid]
+        print(f"{eid}. {e['name']} ({e['date']}) - {e['tickets_left']} left")
     print("=========================\n")
 
 from datetime import datetime
 
-def _hardcoded_events():
-    return [
-        {"id": "1", "name": "Rock concert", "date": "30-12-2025", "genre": "Rock", "tickets_left": 50},
-        {"id": "2", "name": "Pop concert", "date": "05-01-2026", "genre": "Pop", "tickets_left": 0},
-        {"id": "3", "name": "International band performance", "date": "20-01-2026", "genre": "Rock", "tickets_left": 12},
-        {"id": "4", "name": "Local band performance", "date": "30-02-2026", "genre": "Indie", "tickets_left": 7},
-    ]
-
 def filter_events_by_date_range(start_date_str, end_date_str):
     start = datetime.strptime(start_date_str, "%d-%m-%Y").date()
     end = datetime.strptime(end_date_str, "%d-%m-%Y").date()
-    result = []
-    for e in _hardcoded_events():
-        d = datetime.strptime(e["date"], "%d-%m-%Y").date()
+
+    results = []
+    for eid, e in EVENTS.items():
+        try:
+            d = datetime.strptime(e["date"], "%d-%m-%Y").date()
+        except ValueError:
+            # skips invalid dates like 30-02-2026
+            continue
+
         if start <= d <= end:
-            result.append(e)
-    return result
+            results.append({"id": eid, **e})
+    return results
+
 
 def filter_events_by_tickets_left(min_left):
     min_left = int(min_left)
-    return [e for e in _hardcoded_events() if int(e["tickets_left"]) >= min_left]
+
+    results = []
+    for eid, e in EVENTS.items():
+        if int(e.get("tickets_left", 0)) >= min_left:
+            results.append({"id": eid, **e})
+    return results
+
 
 def filter_events_by_genre(genre):
     genre = genre.strip().lower()
-    return [e for e in _hardcoded_events() if e["genre"].strip().lower() == genre]
+
+    results = []
+    for eid, e in EVENTS.items():
+        if e.get("genre", "").strip().lower() == genre:
+            results.append({"id": eid, **e})
+    return results
